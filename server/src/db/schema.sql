@@ -78,14 +78,16 @@ CREATE TABLE IF NOT EXISTS genero_obra (
     id_obra INTEGER NOT NULL,
     PRIMARY KEY (id_genero, id_obra),
     CONSTRAINT fk_genero FOREIGN KEY (id_genero)
-        REFERENCES genero(id_genero) ON DELETE CASCADE
+        REFERENCES genero(id_genero) ON DELETE CASCADE,
+    CONSTRAINT fk_obra FOREIGN KEY (id_obra) 
+        REFERENCES obra(id_obra) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS persona_obra (
     id_persona INTEGER NOT NULL,
     id_obra INTEGER NOT NULL,
     tipo VARCHAR(50) NOT NULL,
-    PRIMARY KEY (id_persona, id_obra),
+    PRIMARY KEY (id_persona, id_obra, tipo),
     CONSTRAINT fk_persona FOREIGN KEY (id_persona)
         REFERENCES persona(id_persona) ON DELETE CASCADE,
     CONSTRAINT fk_obra FOREIGN KEY (id_obra)
