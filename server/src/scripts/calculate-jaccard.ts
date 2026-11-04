@@ -1,4 +1,3 @@
-import { startTime } from 'hono/timing';
 import postgres from 'postgres';
 
 const connectionString = process.env.DATABASE_URL;
@@ -104,7 +103,6 @@ async function calculateJaccard() {
             `;
         }
 
-        const duration = ((Date.now() - startTime) / 1000).toFixed(2);
         console.log("Similitud de Jaccard calculada y almacenada en la base de datos.");
 
     } catch (error) {
