@@ -51,7 +51,7 @@ console.log(`CSV: ${raw.length} filas leídas, ${rows.length} válidas`);
 
 await sql.begin(async (texto) => {
 
-    // protecciond e duplicados
+    // proteccion de duplicados
     const [{n}] = await texto`SELECT count(*)::int AS n FROM obra`;
     if (n > 0) {
        if (!process.env.RESET) {
