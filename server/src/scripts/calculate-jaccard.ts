@@ -59,8 +59,8 @@ async function calculateJaccard() {
 
             for (let i = 0; i < obras.length; i++) {
                 for (let j = i + 1; j < obras.length; j++) {
-                    const o1 = Math.min(obras[i], obras[j]);
-                    const o2 = Math.max(obras[i], obras[j]);
+                    const o1 = Math.min(obras[i]!, obras[j]!);
+                    const o2 = Math.max(obras[i]!, obras[j]!);
                     const key = `${o1},${o2}`;
                     pairCounts.set(key, (pairCounts.get(key) || 0) + 1);
                 }
@@ -70,16 +70,16 @@ async function calculateJaccard() {
         const rowsToInsert: { obra_origen_id: number; obra_destino_id: number; puntuacion: number }[] = [];
 
         for (const [key] of pairCounts.entries()) {
-            const [o1, o2] = key.split(',').map(Number);
-            const set1 = obraCaracteristicas.get(o1)!;
-            const set2 = obraCaracteristicas.get(o2)!;
+            const [o1, o2] = key.split(',').map(Number) as [number, number];
+            const set1 = obraCaracteristicas.get(o1!);
+            const set2 = obraCaracteristicas.get(o2!);
 
             let intersectionSize = 0;
-            for (const item of set1) {
-                if (set2.has(item)) intersectionSize++;
+            for (const item of set1!) {
+                if (set2!.has(item)) intersectionSize++;
             }
 
-            const unionCount = set1.size + set2.size - intersectionSize;
+            const unionCount = set1!.size + set2!.size - intersectionSize;
             const score = intersectionSize / unionCount;
 
             //Almacenar solo si la similitud es mayor al 0.05
