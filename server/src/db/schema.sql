@@ -52,7 +52,6 @@ CREATE TABLE IF NOT EXISTS nodo (
 CREATE TABLE IF NOT EXISTS arista (
     nodo_origen INTEGER NOT NULL,
     nodo_destino INTEGER NOT NULL,
-    tipo VARCHAR(50),
     PRIMARY KEY (nodo_origen, nodo_destino),
     CONSTRAINT fk_nodo_origen FOREIGN KEY (nodo_origen)
         REFERENCES nodo(id_nodo) ON DELETE CASCADE,
@@ -103,3 +102,15 @@ CREATE TABLE IF NOT EXISTS saga_obra (
     CONSTRAINT fk_obra FOREIGN KEY (id_obra)
         REFERENCES obra(id_obra) ON DELETE CASCADE
 );
+
+CREATE INDEX IF NOT EXISTS idx_genero_obra_id_obra
+ON genero_obra (id_obra);
+
+CREATE INDEX IF NOT EXISTS idx_persona_obra_id_obra
+ON persona_obra (id_obra);
+
+CREATE INDEX IF NOT EXISTS idx_saga_obra_id_obra
+ON saga_obra (id_obra);
+
+CREATE INDEX IF NOT EXISTS idx_nodo_id_mapa
+ON nodo (id_mapa);
