@@ -22,7 +22,7 @@ export class UserService {
    * @returns Datos públicos del usuario registrado, sin incluir su contraseña.
    * @throws Error Si el nombre de usuario o el correo electrónico ya están registrados.
    */
-  async userRegister(user: CreateUser) : Promise<PublicUser> {
+  public async userRegister(user: CreateUser) : Promise<PublicUser> {
     const usernameExist = await this.userRepository.searchByUsername(user.nombre_usuario);
     if (usernameExist !== undefined) {
       throw new Error("El nombre de usuario ya está en uso");
