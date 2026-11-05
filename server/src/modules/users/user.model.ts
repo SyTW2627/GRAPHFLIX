@@ -20,7 +20,18 @@ export interface CreateUser {
     password_hash: string;
 }
 
-export interface UpdateData {
+/**
+ * Define los campos que se pueden modificar de un usuario.
+ * Todas las propiedades son opcionales, por lo que se permite
+ * actualizar únicamente el correo, el nombre de usuario o ambos.
+ */
+export interface UpdateUser {
   correo?: string;
   nombre_usuario?: string;
+}
+
+export interface PublicUser {
+  id_usuario: number;
+  nombre_usuario: string;
+  correo: string;
 }
