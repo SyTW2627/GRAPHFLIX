@@ -103,6 +103,18 @@ CREATE TABLE IF NOT EXISTS saga_obra (
         REFERENCES obra(id_obra) ON DELETE CASCADE
 );
 
+-- TABLA JACCARD
+CREATE TABLE IF NOT EXISTS similitud_obra (
+    obra_origen_id INTEGER NOT NULL,
+    obra_destino_id INTEGER NOT NULL,
+    puntuacion DOUBLE PRECISION NOT NULL,
+    PRIMARY KEY (obra_origen_id, obra_destino_id),
+    CONSTRAINT fk_obra_origen FOREIGN KEY (obra_origen_id) 
+        REFERENCES obra(id_obra) ON DELETE CASCADE,
+    CONSTRAINT fk_obra_destino FOREIGN KEY (obra_destino_id) 
+        REFERENCES obra(id_obra) ON DELETE CASCADE
+);
+
 CREATE INDEX IF NOT EXISTS idx_genero_obra_id_obra
 ON genero_obra (id_obra);
 

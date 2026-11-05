@@ -30,6 +30,59 @@ favorite.post("/favorites", async (c) => {
     return c.json({ message: "Se ha añadido a favoritos"});
 })
 
+//post para inserción masiva primera
+/**
+ * FUNCIONAMIENTO:
+ * // POST /favorites/batch
+    {
+    "id_usuario": 5,
+    "ids_obras": [12, 45, 108]
+    }
+ */
+favorite.post("/favorites/batch", async (c) => {
+    const body = await c.req.json().catch(() => null);
+    const idUsuario = Number(body?.id_usuario);
+    const idsObras = body?.ids_obras;
+
+    if (!Number.isInteger(idUsuario) || idUsuario === 0) {
+        return c.json({error: "id_usuario debe ser un número entero positivo"}, 400)
+    }
+
+    if (!Array.isArray(idsObras) || idsObras.length === 0) {
+        return c.json({error: "ids_obras deber ser un array no vacio de IDs"}, 400)
+    }
+
+    const obrasValidas = idsObras.map(Number).filter((id) => Number.isInteger(id) && id > 0);
+    if (obrasValidas.length === 0) {
+        return c.json({error: "Ningun id de obra enviado es válido"}, 400);
+    } 
+
+    if (obrasValidas.length < 3) {
+        return c.json({error: "Se deben proporcionar al menos 3 obras únicas y validas"}, 400);
+    }
+
+    const usuarios = await sql`SELECT 1 FROM usuario WHERE id_usuario = ${idUsuario}`;
+    if (!usuarios[0]) return c.json({error: "Usuario no encontrado"}, 404);
+
+    //Insertar obras recibidas sin duplicados
+    const insertados = await sql `
+        INSERT INTO favorita (id_usuario, id_obra)
+        SELECT ${idUsuario}, obra.id_obra
+        FROM obra
+        WHERE obra.id_obra IN ${sql(obrasValidas)}
+        ON CONFLICT (id_usuario, id_obra) DO NOTHING
+        RETURNING id_obra
+    `;
+
+    return c.json({
+        message: "Favoritos guardados correctamente",
+        recibidos: idsObras.length,
+        validos: obrasValidas.length,
+        insertados: insertados.length    
+    }, 200);
+ 
+});
+
 // get
 favorite.get("/favorites/:idUsuario", async (c) => {
     const idUsuario = Number(c.req.param("idUsuario"));
