@@ -1,49 +1,43 @@
 import { sql } from "../db/db";
+import { MovieRepository } from "../modules/movies/MovieRepository";
+import { MovieService } from "../modules/movies/MovieService";
+
+const movieRepository = new MovieRepository();
+const movieService = new MovieService(movieRepository);
 
 export async function construirGrafo(peliculasSemilla: any[], tipoSemilla: string) {
     // Obtener los IDs de las películas semilla
     const idsSemilla = peliculasSemilla.map(p => Number(p.id_obra));
 
-    // Buscar las relaciones de similitud de las películas semilla
-    const relaciones = await sql`
-        SELECT obra_origen_id, obra_destino_id, puntuacion
-        FROM similitud_obra
-        WHERE obra_origen_id = ANY(${idsSemilla})
-           OR obra_destino_id = ANY(${idsSemilla})
-    `;
+    const relaciones = await movieService.findSimilarityRelations(idsSemilla);
 
     // Obtener los IDs de todas las películas relacionadas
-    const idsRelacionados = relaciones.flatMap(r => [
+    const idsRelacionados: number[] = relaciones.flatMap(r => [
         Number(r.obra_origen_id),
         Number(r.obra_destino_id)
     ]);
 
     // Eliminar duplicados y excluir las películas semilla
     const idsUnicos = [...new Set(idsRelacionados)];
-    const idsRecomendados = idsUnicos.filter(id => !idsSemilla.includes(id));
+    const idsRecomendados: number[] = idsUnicos.filter(id => !idsSemilla.includes(id));
 
     // Obtener los datos de las películas recomendadas
     let peliculasRecomendadas: any[] = [];
 
     if (idsRecomendados.length > 0) {
-        peliculasRecomendadas = await sql`
-            SELECT id_obra, titulo, ano_publicacion, imagen_url
-            FROM obra
-            WHERE id_obra = ANY(${idsRecomendados})
-        `;
+        peliculasRecomendadas = await movieService.findMovies(idsRecomendados);
     }
 
     // Construir los nodos del grafo
     const nodes = [
-        ...peliculasSemilla.map(p => ({ ...p, tipo: tipoSemilla })),
-        ...peliculasRecomendadas.map(p => ({ ...p, tipo: "recomendada" }))
+        ...peliculasSemilla,
+        ...peliculasRecomendadas
     ];
 
     // Construir las aristas del grafo
     const edges = relaciones.map(r => ({
         source: Number(r.obra_origen_id),
-        target: Number(r.obra_destino_id),
-        weight: Number(r.puntuacion)
+        destiny: Number(r.obra_destino_id)
     }));
 
     return { nodes, edges };
