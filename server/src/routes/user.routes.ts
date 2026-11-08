@@ -1,6 +1,9 @@
 import { Hono } from "hono";
+import { sign } from "hono/jwt";
+import { setCookie, deleteCookie } from "hono/cookie";
 import { UserService } from "../modules/users/UserService";
 import { UserRepository } from "../modules/users/UserRepository";
+import { authMiddleware } from "../auth/auth.middleware";
 
 export const userRoutes = new Hono();
 
@@ -13,7 +16,7 @@ const userService = new UserService(userRepository);
  * Recibe: nombre_usuario, correo y password.
  * Devuelve: el usuario creado (201).
  */
-userRoutes.post('/users', async (c) => {
+userRoutes.post('/users/register', async (c) => {
   try {
     const user = await c.req.json();
     if (!user) {
@@ -22,7 +25,7 @@ userRoutes.post('/users', async (c) => {
       }, 400);
     }
 
-    if (!user.nombre_usuario || !user.correo || !user.password_hash) {
+    if (!user.nombre_usuario || !user.correo || !user.password) {
       return c.json({
         message: 'Faltan campos obligatorios',
       }, 400)
@@ -50,13 +53,34 @@ userRoutes.post('/users/login', async (c) => {
       }, 400);
     }
 
-    if (!user.correo || !user.password_hash) {
+    if (!user.correo || !user.password) {
       return c.json({
         message: 'Faltan campos obligatorios',
       }, 400)
     }
 
-    const userLogged = await userService.userLogin(user.correo, user.password_hash);
+    const userLogged = await userService.userLogin(
+      user.correo,
+      user.password
+    );
+
+    const token = await sign(
+      {
+        sub: String(userLogged.id_usuario),
+        exp: Math.floor(Date.now() / 1000) + 3600
+      },
+      Bun.env.TOKEN_SECRET_KEY!,
+      "HS256"
+    );
+
+    setCookie(c, "access_token", token, {
+      httpOnly: true, //Impide que JavaScript del navegador pueda leer la cookie mediante document.cookie. Ayuda a proteger el token frente a ciertos ataques XSS.
+      secure: Bun.env.NODE_ENV === "production", //	Hace que el navegador solo envíe la cookie mediante HTTPS
+      sameSite: "Lax", //Controla cuándo se envía la cookie en peticiones entre sitios.
+      path: "/", //Define para qué rutas del servidor se envía la cookie. / significa todas las rutas.
+      maxAge: 3600 //Tiempo de vida de la cookie en segundos. 3600 equivale a una hora.
+    });
+
     return c.json(userLogged, 200);
   } catch (err) {
     return c.json(err, 500);
@@ -64,11 +88,28 @@ userRoutes.post('/users/login', async (c) => {
 });
 
 /**
+ * POST /users/logout
+ *
+ * Cierra la sesión del usuario eliminando la cookie que almacena el JWT.
+ * No requiere cuerpo en la petición.
+ * Devuelve un mensaje de confirmación (200).
+ */
+userRoutes.post("/users/logout", authMiddleware, (c) => {
+  deleteCookie(c, "access_token", {
+    path: "/",
+  });
+
+  return c.json({
+    message: "Sesión cerrada correctamente",
+  }, 200);
+});
+
+/**
  * GET /users 
  * Obtiene todos los usuarios registrados. 
  * Devuelve: un array con los usuarios (200).
  */
-userRoutes.get('/users', async (c) => {
+userRoutes.get('/users', authMiddleware, async (c) => {
   try {
     const users = await userService.getAllUsers();
     return c.json(users, 200);
@@ -83,8 +124,12 @@ userRoutes.get('/users', async (c) => {
  * Recibe: el ID del usuario como parámetro de la URL. 
  * Devuelve: el usuario encontrado (200).
  */
-userRoutes.get('/users/:id', async (c) => {
+userRoutes.get('/users/:id', authMiddleware, async (c) => {
   const id = Number(c.req.param("id"));
+  
+  if (!Number.isInteger(id) || id <= 0) {
+    return c.json({ message: "ID inválido" }, 400);
+  }
   try {
     const user = await userService.getUserById(id);
     return c.json(user, 200);
@@ -100,8 +145,12 @@ userRoutes.get('/users/:id', async (c) => {
  * Solo permite actualizar nombre_usuario y correo. 
  * Devuelve: el usuario actualizado (200).
  */
-userRoutes.patch('/users/:id', async (c) => {
+userRoutes.patch('/users/:id', authMiddleware, async (c) => {
   const id = Number(c.req.param("id"));
+
+  if (!Number.isInteger(id) || id <= 0) {
+    return c.json({ message: "ID inválido" }, 400);
+  }
   try {
     const data = await c.req.json();
     if (!data) {
@@ -134,9 +183,14 @@ userRoutes.patch('/users/:id', async (c) => {
  * Recibe: el ID del usuario como parámetro de la URL. 
  * Devuelve: 204 si se elimina correctamente (sin cuerpo).
  */
-userRoutes.delete('/users/:id', async (c) => {
+userRoutes.delete('/users/:id', authMiddleware, async (c) => {
   try {
     const id = Number(c.req.param("id"));
+
+    if (!Number.isInteger(id) || id <= 0) {
+      return c.json({ message: "ID inválido" }, 400);
+    }
+
     await userService.deleteUser(id);
     return c.body(null, 204);
 

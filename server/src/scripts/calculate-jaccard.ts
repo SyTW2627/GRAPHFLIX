@@ -1,7 +1,11 @@
 import postgres from 'postgres';
-import { int } from 'zod';
+import {MovieRepository} from '../modules/movies/MovieRepository';
+import {MovieService} from '../modules/movies/MovieService';
 
 const connectionString = process.env.DATABASE_URL;
+
+const movieRepository = new MovieRepository();
+const movieService = new MovieService(movieRepository);
 
 if (!connectionString) {
     console.error("ERROR: DATABASE_URL no está configurada en el entorno.");
@@ -15,23 +19,18 @@ async function calculateJaccard() {
 
     try {
         //Obras
-        const obras = await sql `SELECT id_obra FROM obra`;
+        const obras = await movieService.findAllIdMovies();
 
-        //Caracteristicas
-        const generos = await sql `SELECT id_obra, 'genero_' || id_genero AS feature FROM genero_obra`;
-        const personas = await sql `SELECT id_obra, 'persona_' || id_persona || '_' || tipo AS feature FROM persona_obra`; 
-        const sagas = await sql `SELECT id_obra, 'saga_' || id_saga AS feature FROM saga_obra`;
+        const generos = await movieService.findGenres();
+        const personas = await movieService.findPeople();
+        const sagas = await movieService.findSagas();
 
         //Conjunto de caracteristicas
         const caracteristicas = new Map<number, Set<string>>();
 
-        for (const obra of obras) {
-            caracteristicas.set(obra.id_obra, new Set());
-        }
+        for (const obra of obras) caracteristicas.set(obra.id_obra, new Set());
 
-        for (const fila of [...generos, ...personas, ...sagas]) {
-            caracteristicas.get(fila.id_obra)?.add(fila.feature)
-        }
+        for (const fila of [...generos, ...personas, ...sagas]) caracteristicas.get(fila.id_obra)?.add(fila.feature);
 
         //Comparar obra por obra
         const resultados = [];
@@ -53,18 +52,11 @@ async function calculateJaccard() {
 
                 //Unión
                 const union = set1.size + set2.size - interseccion;
-
                 if (union === 0) continue;
 
                 //Jaccard
                 const jaccard = interseccion / union;
-                if (jaccard > 0.2) {
-                    resultados.push({
-                        obra_origen_id: id1,
-                        obra_destino_id: id2,
-                        puntuacion: jaccard
-                    });
-                }
+                if (jaccard > 0.2) resultados.push({ obra_origen_id: id1, obra_destino_id: id2, puntuacion: jaccard });
             }
         }
 
@@ -73,12 +65,7 @@ async function calculateJaccard() {
 
         for (let i = 0; i < resultados.length; i+=TAM_LOTE) {
             const lote = resultados.slice(i, i+TAM_LOTE);
-
-            await sql `
-                INSERT INTO similitud_obra ${sql(lote, "obra_origen_id", "obra_destino_id", "puntuacion")}
-                ON CONFLICT (obra_origen_id, obra_destino_id)
-                DO UPDATE SET puntuacion = EXCLUDED.puntuacion
-            `;
+            await movieService.insertByBatchInSimilitudObra(lote);
         }
 
         console.log(`Jaccard terminado. ${resultados.length} similitudes guardadas.`);

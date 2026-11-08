@@ -1,11 +1,11 @@
 import { Hono } from "hono";
+import { authMiddleware } from "../auth/auth.middleware";
 import { sql } from "../db/db";
 import { construirGrafo } from "../services/recommendation.services";
 import { UserRepository } from "../modules/users/UserRepository";
 import { UserService } from "../modules/users/UserService";
 import { MovieRepository } from "../modules/movies/MovieRepository";
 import { MovieService } from "../modules/movies/MovieService";
-import { movies } from "./movies";
 
 export const recommendations = new Hono();
 

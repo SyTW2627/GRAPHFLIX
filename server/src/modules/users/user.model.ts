@@ -17,7 +17,7 @@ export interface User {
 export interface CreateUser {
     nombre_usuario: string;
     correo: string;
-    password_hash: string;
+    password: string;
 }
 
 /**

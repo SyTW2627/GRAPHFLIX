@@ -47,4 +47,55 @@ export class MovieService {
             throw error;
         }
     }
+
+    async insertFavoriteMovies(movieIds: number[], userId: number) {
+        try {
+            await userService.getUserById(userId);
+            await this.movieRepository.getMovies(movieIds); 
+            return await this.movieRepository.insertMovies(movieIds, userId);
+
+        } catch(error) {
+            throw error;
+        }
+    }
+
+    async findGenres() {
+        try {
+            return await this.movieRepository.getGenres();
+        } catch(error) {
+            throw error;
+        }
+    }
+    
+    async findPeople() {
+        try {
+            return await this.movieRepository.getPeople();
+        } catch(error) {
+            throw error;
+        }
+    }
+
+    async findSagas() {
+        try {
+            return await this.movieRepository.getSagas();
+        } catch(error) {
+            throw error;
+        }
+    }  
+    
+    async findAllIdMovies() {
+        try {
+            return await this.movieRepository.getAllIdMovies();
+        } catch(error) {
+            throw error;
+        }
+    } 
+    
+    async insertByBatchInSimilitudObra(lote: { obra_origen_id: number, obra_destino_id: number, puntuacion: number }[]) {
+        try {
+            return await this.movieRepository.insertByBatchInSimilitudObra(lote);
+        } catch(error) {
+            throw error;
+        }
+    }
 }

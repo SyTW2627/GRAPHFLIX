@@ -1,7 +1,17 @@
 import { Hono } from "hono";
 import { sql } from "../db/db";
+import { UserRepository } from "../modules/users/UserRepository";
+import { UserService } from "../modules/users/UserService";
+import { MovieRepository } from "../modules/movies/MovieRepository";
+import { MovieService } from "../modules/movies/MovieService";
 
 export const favorite = new Hono();
+
+const userRepository = new UserRepository();
+const userService = new UserService(userRepository);
+
+const movieRepository = new MovieRepository();
+const movieService = new MovieService(movieRepository);
 
 // post
 favorite.post("/favorites", async (c) => {
@@ -30,14 +40,11 @@ favorite.post("/favorites", async (c) => {
     return c.json({ message: "Se ha añadido a favoritos"});
 })
 
-//post para inserción masiva primera
 /**
- * FUNCIONAMIENTO:
- * // POST /favorites/batch
-    {
-    "id_usuario": 5,
-    "ids_obras": [12, 45, 108]
-    }
+ * POST /favorites/batch
+ * Guarda un lote de obras favoritas para un usuario.
+ * Recibe: un objeto JSON con id_usuario y un array de ids_obras.
+ * Devuelve: un mensaje de confirmación y estadísticas sobre la operación (200).
  */
 favorite.post("/favorites/batch", async (c) => {
     const body = await c.req.json().catch(() => null);
@@ -61,18 +68,10 @@ favorite.post("/favorites/batch", async (c) => {
         return c.json({error: "Se deben proporcionar al menos 3 obras únicas y validas"}, 400);
     }
 
-    const usuarios = await sql`SELECT 1 FROM usuario WHERE id_usuario = ${idUsuario}`;
-    if (!usuarios[0]) return c.json({error: "Usuario no encontrado"}, 404);
+    const usuario = await userService.getUserById(idUsuario);
 
     //Insertar obras recibidas sin duplicados
-    const insertados = await sql `
-        INSERT INTO favorita (id_usuario, id_obra)
-        SELECT ${idUsuario}, obra.id_obra
-        FROM obra
-        WHERE obra.id_obra IN ${sql(obrasValidas)}
-        ON CONFLICT (id_usuario, id_obra) DO NOTHING
-        RETURNING id_obra
-    `;
+    const insertados = await movieService.insertFavoriteMovies(obrasValidas, idUsuario);
 
     return c.json({
         message: "Favoritos guardados correctamente",

@@ -47,4 +47,45 @@ export class MovieRepository {
 
         return relations;
     }
+
+    async insertMovies( movieIds: number[], userId: number) {
+        const insertados = await sql `
+            INSERT INTO favorita (id_usuario, id_obra)
+            SELECT ${userId}, obra.id_obra
+            FROM obra
+            WHERE obra.id_obra IN ${sql(movieIds)}
+            ON CONFLICT (id_usuario, id_obra) DO NOTHING
+            RETURNING id_obra
+        `;
+        return insertados;
+    }
+
+    async getGenres() {
+        const generos = await sql `SELECT id_obra, 'genero_' || id_genero AS feature FROM genero_obra`;
+        return generos;
+    }
+
+    async getPeople() {
+        const personas = await sql `SELECT id_obra, 'persona_' || id_persona || '_' || tipo AS feature FROM persona_obra`;
+        return personas;
+    }
+
+    async getSagas() {
+        const sagas = await sql `SELECT id_obra, 'saga_' || id_saga AS feature FROM saga_obra`;
+        return sagas;
+    }
+
+    async getAllIdMovies() {
+        const allMovies = await sql `SELECT id_obra FROM obra`;
+        return allMovies;
+    }
+
+    async insertByBatchInSimilitudObra(lote: { obra_origen_id: number, obra_destino_id: number, puntuacion: number }[]) {
+        const insertados = await sql `
+            INSERT INTO similitud_obra ${sql(lote, "obra_origen_id", "obra_destino_id", "puntuacion")}
+            ON CONFLICT (obra_origen_id, obra_destino_id)
+            DO UPDATE SET puntuacion = EXCLUDED.puntuacion
+        `;
+        return insertados;
+    }
 }
