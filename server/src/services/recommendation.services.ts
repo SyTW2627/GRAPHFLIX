@@ -5,7 +5,14 @@ import { MovieService } from "../modules/movies/MovieService";
 const movieRepository = new MovieRepository();
 const movieService = new MovieService(movieRepository);
 
-export async function construirGrafo(peliculasSemilla: any[], tipoSemilla: string) {
+/**
+ * Función para construir un grafo de películas basado en similitudes.
+ * @param peliculasSemilla Array de películas semilla (favoritas o populares).
+ * @returns Un objeto con nodos y aristas del grafo.
+ * @param peliculasSemilla Array de películas semilla (favoritas o populares).
+ * @returns Un objeto con nodos y aristas del grafo.
+ */
+export async function construirGrafo(peliculasSemilla: any[]) {
     // Obtener los IDs de las películas semilla
     const idsSemilla = peliculasSemilla.map(p => Number(p.id_obra));
 

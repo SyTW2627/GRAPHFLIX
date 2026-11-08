@@ -32,7 +32,7 @@ recommendations.get("/recommendations/:idUsuario", async (c) => {
 
         // CASO A: EL USUARIO TIENE PELÍCULAS FAVORITAS
         if (peliculasFavoritas.length > 0) {
-            const grafo = await construirGrafo(peliculasFavoritas, "favorita");
+            const grafo = await construirGrafo(peliculasFavoritas);
             return c.json({ isColdStart: false, ...grafo });
         }
 
@@ -43,7 +43,7 @@ recommendations.get("/recommendations/:idUsuario", async (c) => {
             return c.json({ isColdStart: true, nodes: [], edges: [] });
         }
 
-        const grafo = await construirGrafo(peliculasPopulares, "popular");
+        const grafo = await construirGrafo(peliculasPopulares);
         return c.json({ isColdStart: true, ...grafo });
 
     }catch(error) {
