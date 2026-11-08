@@ -31,11 +31,11 @@ export class UserService {
     if (emailExist !== undefined) {
       throw new Error("El correo electrónico ya está registrado");
     }
-    const passwordHash = await Bun.password.hash(user.password_hash);
+    const passwordHash = await Bun.password.hash(user.password);
 
     const userRegistered = await this.userRepository.create({
       ...user,
-      password_hash: passwordHash
+      password: passwordHash
     });
 
     const {password_hash, ...publicUser} = userRegistered;
