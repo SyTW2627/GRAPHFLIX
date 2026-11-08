@@ -77,7 +77,7 @@ export class UserRepository {
   async create(user: CreateUser) : Promise<User> {
     const [newUser] = await sql`
       INSERT INTO usuario(nombre_usuario,correo,password_hash)
-      (${user.nombre_usuario}, ${user.correo}, ${user.password_hash});
+      (${user.nombre_usuario}, ${user.correo}, ${user.password});
     `;
 
     return newUser;

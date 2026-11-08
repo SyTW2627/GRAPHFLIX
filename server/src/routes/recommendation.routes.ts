@@ -1,10 +1,11 @@
 import { Hono } from "hono";
+import { authMiddleware } from "../auth/auth.middleware";
 import { sql } from "../db/db";
 import { construirGrafo } from "../services/recommendation.services";
 
 export const recommendations = new Hono();
 
-recommendations.get("/recommendations/:idUsuario", async (c) => {
+recommendations.get("/recommendations/:idUsuario", authMiddleware, async (c) => {
     const idUsuario = Number(c.req.param("idUsuario"));
     const limit = Number(c.req.query("limit") ?? 10);
 
