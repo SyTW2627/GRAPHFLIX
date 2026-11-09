@@ -63,25 +63,25 @@ function LandingScreen() {
 
         {/*CÓMO FUNCIONA */}
         <section id="como-funciona" className="how-it-works-section">
-          <h2 className="section-title">Cómo funciona GRAPHFLIX</h2>
+          <h2 className="section-title">¿Cómo funciona GRAPHFLIX?</h2>
 
           <div className="steps-grid">
             <div className="step-card">
               <span className="step-number">01</span>
               <h3>Selecciona tus favoritas</h3>
-              <p>Indica 3 películas que te encanten para romper el inicio en frío y activar tu mapa.</p>
+              <p>Indica 3 obras que te encanten para crear tu mapa personalizado con tus preferencias.</p>
             </div>
 
             <div className="step-card">
               <span className="step-number">02</span>
               <h3>Genera las conexiones</h3>
-              <p>GRAPHFLIX traza las aristas de similitud conectando títulos afines.</p>
+              <p>GRAPHFLIX genera automáticamente las conexiones entre tus obras favoritas para que puedas explorarlas y descubrir nuevas recomendaciones.</p>
             </div>
 
             <div className="step-card">
               <span className="step-number">03</span>
               <h3>Explora y descubre</h3>
-              <p>Navega visualmente por los nodos y encuentra tu próxima película para ver.</p>
+              <p>Navega visualmente por los nodos, filtra los resultados y encuentra tu próxima película para ver accediendo a su información detallada.</p>
             </div>
           </div>
         </section>
