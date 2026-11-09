@@ -1,26 +1,72 @@
 .navbar {
   display: flex;
   align-items: center;
-  gap: 10px;
-
+  justify-content: space-between;
   width: 100%;
   height: 70px;
-  padding: 0 30px;
-
+  padding: 0 32px;
   background-color: #FFFFFF;
   border-bottom: 1px solid #E5E5EA;
+  box-sizing: border-box;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
 }
 
 .navbar-logo {
   width: 40px;
   height: 40px;
   object-fit: contain;
-  color: #7e4dcd;
 }
 
 .navbar-title {
   margin: 0;
   color: #7C3AED;
-  font-size: 28px;
+  font-size: 30px;
   font-weight: 700;
+  letter-spacing: -0.5px;
+  text-decoration: none;
+}
+
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-btn {
+  height: 46px;
+  padding: 0 16px;
+  border-radius: 8px;
+  font-size: 24px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary {
+  background-color: transparent;
+  border: 1px solid #E5E5EA;
+  color: #1D1D1F;
+}
+
+.btn-secondary:hover {
+  background-color: #F5F5F7;
+  border-color: #C4B5FD;
+  zoom: 1.05;
+}
+
+.btn-primary {
+  background-color: #7C3AED;
+  border: none;
+  color: #FFFFFF;
+}
+
+.btn-primary:hover {
+  background-color: #6D28D9;
+  zoom: 1.05;
 }

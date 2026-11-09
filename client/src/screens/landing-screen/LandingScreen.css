@@ -1,0 +1,358 @@
+/* ==========================================================================
+   PALETA DE COLORES Y CONFIGURACIÓN GENERAL
+   ========================================================================== */
+:root {
+  --bg-landing: #FAF9FF;
+  --primary-violet: #7C3AED;
+  --secondary-violet: #A78BFA;
+  --text-primary: #181525;
+  --text-secondary: #777487;
+  --border-light: #E4E1F3;
+  --border-dark: #6a6a6d;
+}
+
+.landing-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--bg-landing);
+  color: var(--text-primary);
+  padding: 40px 24px 100px 24px;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+/* ==========================================================================
+   ESTILOS DE BOTONES MEJORADOS (Borde 12px, transiciones de 200ms)
+   ========================================================================== */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 52px;
+  padding: 0 28px;
+  background-color: var(--primary-violet);
+  color: #FFFFFF;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(124, 58, 237, 0.25);
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.btn-primary:hover {
+  background-color: #6D28D9;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(124, 58, 237, 0.35);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 52px;
+  padding: 0 24px;
+  background-color: transparent;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  border: 1px solid var(--border-dark);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.btn-secondary:hover {
+  background-color: #FFFFFF;
+  border-color: var(--secondary-violet);
+  color: rgb(70, 40, 123);
+  transform: translateY(-2px);
+}
+
+.btn-large {
+  height: 58px;
+  padding: 0 36px;
+  font-size: 17px;
+}
+
+/* ==========================================================================
+   1. landing SECTION & RESPLANDOR RADIAL VIOLETA
+   ========================================================================== */
+.landing-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1400px;
+  width: 100%;
+  gap: 40px;
+  padding: 40px 0 80px 0;
+}
+
+.landing-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  max-width: 540px;
+}
+
+.landing-graph-container {
+  flex: 1.5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.landing-badge {
+  display: inline-block;
+  padding: 6px 14px;
+  background-color: #F0EBFF;
+  color: var(--primary-violet);
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 20px;
+  margin-bottom: 24px;
+  border: 1px solid #E2D9FF;
+}
+
+.landing-title {
+  font-size: 52px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0 0 20px 0;
+  line-height: 1.1;
+}
+
+.landing-description {
+  font-size: 18px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin: 0 0 36px 0;
+}
+
+.landing-buttons {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.graph-visual {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 850px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.graph-visual img {
+  width: 100%;
+  height: auto;
+  max-height: 600px;
+  object-fit: contain;
+}
+
+/* ==========================================================================
+   ESTILOS DE SECCIONES COMUNES
+   ========================================================================== */
+.section-subtitle {
+  text-transform: uppercase;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary-violet);
+  letter-spacing: 1px;
+}
+
+.section-title {
+  font-size: 34px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 8px 0 48px 0;
+  letter-spacing: -0.5px;
+}
+
+/* ==========================================================================
+   2. SECCIÓN CARACTERÍSTICAS
+   ========================================================================== */
+.features-section,
+.how-it-works-section {
+  max-width: 1200px;
+  width: 100%;
+  text-align: center;
+  padding: 60px 0 80px 0;
+}
+
+.features-grid,
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+}
+
+/* Estilo base idéntico para todas las tarjetas */
+.feature-card,
+.step-card {
+  background: #FFFFFF;
+  padding: 36px 28px;
+  border-radius: 16px;
+  border: 1px solid var(--border-light);
+  text-align: left;
+  box-shadow: 0 4px 16px rgba(88, 62, 133, 0.3);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.feature-card:hover,
+.step-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(137, 84, 227, 0.4);
+}
+
+/* Títulos y textos legibles y unificados */
+.feature-card h3,
+.step-card h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 12px 0;
+}
+
+.feature-card p,
+.step-card p {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* ==========================================================================
+   3. SECCIÓN CÓMO FUNCIONA
+   ========================================================================== */
+.how-it-works-section {
+  max-width: 1200px;
+  width: 100%;
+  text-align: center;
+  padding: 60px 0 80px 0;
+}
+
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+}
+
+.step-card {
+  background: #FFFFFF;
+  padding: 36px 28px;
+  border-radius: 16px;
+  border: 1px solid var(--border-light);
+  text-align: left;
+  box-shadow: 0 4px 16px rgba(88, 62, 133, 0.3);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.step-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(137, 84, 227, 0.4);
+}
+
+.step-number {
+  font-size: 40px;
+  font-weight: 900;
+  color: #7C3AED;
+  opacity: 0.6;
+  display: block;
+  margin-bottom: 12px;
+}
+
+.step-card h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 12px 0;
+}
+
+.step-card p {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* ==========================================================================
+   4. CTA FINAL
+   ========================================================================== */
+.final-section {
+  max-width: 1200px;
+  width: 100%;
+  padding: 40px 0;
+}
+
+.final-banner {
+  background-color: #7C3AED;
+  border-radius: 24px;
+  padding: 60px 40px;
+  text-align: center;
+  color: #FFFFFF;
+  box-shadow: 0 16px 40px rgba(124, 58, 237, 0.3);
+}
+
+
+.final-banner h2 {
+  font-size: 36px;
+  font-weight: 800;
+  margin: 0 0 16px 0;
+}
+
+.final-banner p {
+  font-size: 18px;
+  color: #E2D9FF;
+  margin: 0 0 36px 0;
+}
+
+.final-banner .btn-primary {
+  background-color: #FFFFFF;
+  color: var(--primary-violet);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.final-banner .btn-primary:hover {
+  background-color: #FAF9FF;
+  transform: translateY(-2px);
+}
+
+/* ==========================================================================
+   RESPONSIVIDAD
+   ========================================================================== */
+@media (max-width: 968px) {
+  .landing-section {
+    flex-direction: column;
+    text-align: center;
+    gap: 40px;
+  }
+
+  .landing-content {
+    align-items: center;
+  }
+
+  .landing-title {
+    font-size: 38px;
+  }
+
+  .features-grid,
+  .steps-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .final-banner {
+    padding: 40px 24px;
+  }
+
+  .final-banner h2 {
+    font-size: 28px;
+  }
+}
