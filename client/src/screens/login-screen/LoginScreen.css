@@ -14,6 +14,7 @@
   font-weight: 600;
   margin-bottom: 30px;
   color: #1D1D1F;
+
 }
 
 .login-form {
@@ -65,6 +66,7 @@
   outline: none;
   background: transparent;
   font-size: 16px;
+
 }
 
 .password-container button {
@@ -115,4 +117,31 @@
 .password-container input::-ms-reveal,
 .password-container input::-ms-clear {
   display: none;
+}
+.login-form p {
+  padding: 10px;
+  margin-bottom: 5px;
+  color: #1D1D1F;
+  font-size: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.form-group label {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1D1D1F;
+  text-align: left;
+}
+
+.login-logo {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  margin-bottom: 5px;
 }
