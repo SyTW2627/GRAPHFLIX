@@ -1,6 +1,4 @@
-/* ==========================================================================
-   PALETA DE COLORES Y CONFIGURACIÓN GENERAL
-   ========================================================================== */
+/* PALETA DE COLORES Y CONFIGURACIÓN GENERAL */
 :root {
   --bg-landing: #FAF9FF;
   --primary-violet: #7C3AED;
@@ -22,9 +20,7 @@
   overflow-x: hidden;
 }
 
-/* ==========================================================================
-   ESTILOS DE BOTONES MEJORADOS (Borde 12px, transiciones de 200ms)
-   ========================================================================== */
+/* ESTILOS DE BOTONES */
 .btn-primary {
   display: inline-flex;
   align-items: center;
@@ -78,9 +74,7 @@
   font-size: 17px;
 }
 
-/* ==========================================================================
-   1. landing SECTION & RESPLANDOR RADIAL VIOLETA
-   ========================================================================== */
+/*LANDING SECTION*/
 .landing-section {
   display: flex;
   align-items: center;
@@ -157,9 +151,7 @@
   object-fit: contain;
 }
 
-/* ==========================================================================
-   ESTILOS DE SECCIONES COMUNES
-   ========================================================================== */
+/*ESTILOS DE SECCIONES COMUNES*/
 .section-subtitle {
   text-transform: uppercase;
   font-size: 13px;
@@ -176,9 +168,7 @@
   letter-spacing: -0.5px;
 }
 
-/* ==========================================================================
-   2. SECCIÓN CARACTERÍSTICAS
-   ========================================================================== */
+/*SECCIÓN CARACTERÍSTICAS */
 .features-section,
 .how-it-works-section {
   max-width: 1200px;
@@ -195,8 +185,7 @@
 }
 
 /* Estilo base idéntico para todas las tarjetas */
-.feature-card,
-.step-card {
+.feature-card, .step-card {
   background: #FFFFFF;
   padding: 36px 28px;
   border-radius: 16px;
@@ -206,32 +195,27 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.feature-card:hover,
-.step-card:hover {
+.feature-card:hover, .step-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 12px 28px rgba(137, 84, 227, 0.4);
 }
 
 /* Títulos y textos legibles y unificados */
-.feature-card h3,
-.step-card h3 {
+.feature-card h3, .step-card h3 {
   font-size: 20px;
   font-weight: 700;
   color: var(--text-primary);
   margin: 0 0 12px 0;
 }
 
-.feature-card p,
-.step-card p {
+.feature-card p, .step-card p {
   font-size: 15px;
   line-height: 1.6;
   color: var(--text-secondary);
   margin: 0;
 }
 
-/* ==========================================================================
-   3. SECCIÓN CÓMO FUNCIONA
-   ========================================================================== */
+/* SECCIÓN CÓMO FUNCIONA */
 .how-it-works-section {
   max-width: 1200px;
   width: 100%;
@@ -283,9 +267,7 @@
   margin: 0;
 }
 
-/* ==========================================================================
-   4. CTA FINAL
-   ========================================================================== */
+/*SECCIÓN FINAL */
 .final-section {
   max-width: 1200px;
   width: 100%;
@@ -325,9 +307,7 @@
   transform: translateY(-2px);
 }
 
-/* ==========================================================================
-   RESPONSIVIDAD
-   ========================================================================== */
+/* RESPONSIVIDAD - Ajustes para pantallas pequeñas */
 @media (max-width: 968px) {
   .landing-section {
     flex-direction: column;
