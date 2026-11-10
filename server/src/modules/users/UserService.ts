@@ -1,7 +1,7 @@
 import type { CreateUser, UpdateUser, User, PublicUser } from "./user.model";
 import type { UserRepository } from "./UserRepository";
 
-import { ConflictError, UnauthorizedError, NotFoundError } from "../../errors/AppError";
+import { ConflictError, UnauthorizedError, NotFoundError, ValidationError } from "../../errors/AppError";
 
 /**
  * Servicio encargado de gestionar la lógica de negocio relacionada
@@ -110,8 +110,7 @@ export class UserService {
     const updatedUser = await this.userRepository.update(id, data);
 
     if (!updatedUser) {
-        // devuelve error 500 porque el usuario existe pero la actualización fallo
-        throw new Error("No se pudo actualizar el usuario");
+        throw new Error('No se pudieron actualizar los datos del usuario')
     }
 
     const {password_hash, ...publicUser} = updatedUser;

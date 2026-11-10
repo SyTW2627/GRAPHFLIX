@@ -75,12 +75,15 @@ export class UserRepository {
    * @returns El usuario creado, incluyendo su identificador.
    */
   async create(user: CreateUser) : Promise<User> {
-    const [newUser] = await sql`
+    const [newUser] = await sql<User[]>`
       INSERT INTO usuario(nombre_usuario,correo,password_hash)
       VALUES (${user.nombre_usuario}, ${user.correo}, ${user.password})
       RETURNING *;
     `;
 
+    if (!newUser) {
+      throw new Error("No se pudo crear el usuario");
+    }
     return newUser;
   }
 
