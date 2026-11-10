@@ -1,4 +1,3 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import "./Header.css";
 import logo from "../../assets/logo-graphflix.png";
@@ -21,7 +20,9 @@ function Header() {
         <Link to="/login" className="nav-btn btn-secondary">
           Iniciar sesión
         </Link>
-        <button className="nav-btn btn-primary">Registrarse</button>
+        <Link to="/register" className="nav-btn btn-primary">
+          Registrarse
+        </Link>
       </nav>
     </header>
   );

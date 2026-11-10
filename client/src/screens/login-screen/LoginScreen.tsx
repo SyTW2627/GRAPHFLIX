@@ -5,6 +5,7 @@ import logo from "../../assets/logo-graphflix.png";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import { login } from "../../services/auth.service";
+import { Link } from "react-router-dom";
 
 function LoginScreen() {
   const [mostrarPassword, setMostrarPassword] = useState(false);
@@ -95,7 +96,9 @@ function LoginScreen() {
 
         </form>
 
-        <p>¿No tienes una cuenta? Regístrate</p>
+        <p>
+          ¿No tienes una cuenta? <Link to="/register">Crear cuenta</Link>
+        </p>
       </div>
 
       <Footer />
