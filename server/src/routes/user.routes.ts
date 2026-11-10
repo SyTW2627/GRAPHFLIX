@@ -34,7 +34,11 @@ userRoutes.post('/users/register', async (c) => {
     const newUser = await userService.userRegister(user);
     return c.json(newUser, 201);
   } catch (err) {
-    return c.json(err, 500)
+    console.error("Error al registrar usuario:", err);
+
+      return c.json({
+        message: err instanceof Error ? err.message : String(err)
+      }, 500);
   }
 });
 
