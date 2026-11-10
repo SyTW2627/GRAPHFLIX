@@ -9,8 +9,7 @@ import RedMorada from "../../assets/RedMorada.png";
 function LandingScreen() {
   return (
     <>
-      <Header />
-
+      <Header isLanding={true} />
       <main className="landing-container">
         {/*SECCIÓN LANDING */}
         <section className="landing-section">
@@ -26,9 +25,6 @@ function LandingScreen() {
               <Link to="/login" className="btn-primary">
                   EXPLORA TU MAPA PERSONALIZADO
               </Link>
-              <a href="#como-funciona" className="btn-secondary">
-                Ver cómo funciona
-              </a>
             </div>
           </div>
 
@@ -91,8 +87,7 @@ function LandingScreen() {
           <div className="final-banner">
             <h2>¿Listo para construir tu universo de entretenimiento?</h2>
             <p>Únete a GRAPHFLIX hoy mismo y empieza a conectar tu catálogo personal.</p>
-            <Link className="btn-primary btn-large" to="/login"> 
-            {/*Cambiar a /register cuando esté disponible la ruta de registro*/}
+            <Link className="btn-primary btn-large" to="/register"> 
               Crear mi mapa gratis
             </Link>
           </div>

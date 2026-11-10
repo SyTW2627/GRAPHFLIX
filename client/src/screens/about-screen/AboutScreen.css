@@ -1,0 +1,264 @@
+/* PALETA Y CONFIGURACIÓN GENERAL */
+.origin-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--bg-landing, #FAF9FF);
+  color: var(--text-primary, #57555f);
+  padding: 40px 24px 100px 24px;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+/* TEXTOS Y TÍTULOS */
+.normal-text {
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--text-secondary, #636071);
+  margin: 0;
+}
+
+h1 {
+    font-size: 40px;
+    font-weight: 800;
+    color: #29282a;
+    margin: 0 0 20px 0;
+}
+
+h2 { 
+  font-size: 28px;
+  font-weight: 800;
+  color: #29282a;
+  margin: 0 0 20px 0;
+}
+
+/* CONTENEDOR MÁSTER DE SECCIONES */
+.about-section-block {
+  max-width: 1200px;
+  width: 100%;
+  padding: 30px 0;
+  box-sizing: border-box;
+}
+
+/* TARJETA UNIFICADA PARA TODO EL SITIO */
+.standard-card {
+  background: #FFFFFF;
+  padding: 36px 32px;
+  border-radius: 16px;
+  border: 1px solid var(--border-light, #E4E1F3);
+  box-shadow: 0 4px 16px rgba(88, 62, 133, 0.15);
+  box-sizing: border-box;
+  height: 100%;
+
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.standard-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(88, 62, 133, 0.20);
+}
+
+.standard-card h3 {
+  font-size: 22px;
+  font-weight: 800;
+  text-align: center;
+  color: var(--primary-violet, #7C3AED);
+  margin: 0 0 14px 0;
+}
+
+/* GRID DE 2 COLUMNAS ALINEADO */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 28px;
+  width: 100%;
+}
+
+/* 1. SECCIÓN ORIGEN */
+.origin-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1200px;
+  width: 100%;
+  gap: 48px;
+  padding: 40px 0 30px 0;
+  box-sizing: border-box;
+}
+
+.origin-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.origin-image {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.origin-image img {
+  width: 100%;
+  max-width: 520px;
+  border-radius: 16px;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 15px 35px rgba(124, 58, 237, 0.2));
+  transition: transform 0.3s ease;
+}
+
+.origin-image img:hover {
+  transform: scale(1.02);
+}
+
+/* 3. SECCIÓN PROBLEMÁTICA Y SOLUCIÓN */
+.cards-problem-grid {
+  display: grid;
+  grid-template-columns: 1fr 60px 1fr;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+  margin-top: 30px;
+}
+
+.solution-arrow {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.solution-arrow span {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #7C3AED;
+  color: white;
+  border-radius: 50%;
+  font-size: 25px;
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.25);
+  transition: transform 0.3s ease;
+}
+
+.solution-arrow span:hover {
+  transform: translateX(5px);
+}
+
+/* MISIÓN Y VISIÓN */
+.purpose-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 36px;
+  background: transparent;
+  padding: 36px 32px;
+  box-sizing: border-box;
+  height: 100%;
+}
+
+.purpose-card h3 {
+  font-size: 22px;
+  font-weight: 800;
+  text-align: center;
+  color: var(--primary-violet, #7C3AED);
+  margin: 0 0 14px 0;
+
+}
+
+.purpose-image {
+  width: 100%;
+  aspect-ratio: 1/1;
+  border-radius: 16px;
+  object-fit: cover;
+  margin-bottom: 20px;
+}
+
+.purpose-image:hover {
+  transform: scale(1.02);
+}
+
+/* FILOSOFÍA */
+.philosophy-section {
+  background:#ebeaf0;
+  border: 1px solid rgba(124, 58, 237, 0.15);
+  border-radius: 20px;
+  padding: 55px 60px;
+  margin-top: 30px;
+  text-align: center;
+}
+
+.philosophy-content {
+  max-width: 850px;
+  margin: 0 auto;
+}
+
+.philosophy-label {
+  display: inline-block;
+  color: var(--primary-violet, #7C3AED);
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+}
+
+.philosophy-content h2 {
+  font-size: 28px;
+  line-height: 1.3;
+  font-weight: 800;
+  color: var(--text-primary, #272531);
+  margin: 0 0 22px;
+}
+
+.philosophy-content p {
+  font-size: 17px;
+  line-height: 1.7;
+  color: var(--text-secondary, #777487);
+  margin: 0;
+}
+
+/* RESPONSIVE */
+@media (max-width: 968px) {
+  .philosophy-section {
+    padding: 40px 25px;
+  }
+
+  .philosophy-content h2 {
+    font-size: 26px;
+  }
+}
+
+/* RESPONSIVIDAD */
+@media (max-width: 968px) {
+  .origin-section {
+    flex-direction: column;
+    text-align: center;
+    gap: 32px;
+  }
+
+  .origin-content {
+    align-items: center;
+    text-align: center;
+  }
+
+  .origin-content h2 {
+    font-size: 32px;
+  }
+
+  .cards-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .solution-arrow span {
+    transform: rotate(90deg);
+  }
+
+  .solution-arrow span:hover {
+    transform: rotate(90deg) translateX(5px);
+  }
+}

@@ -1,6 +1,8 @@
 import type { CreateUser, UpdateUser, User, PublicUser } from "./user.model";
 import type { UserRepository } from "./UserRepository";
 
+import { ConflictError, UnauthorizedError, NotFoundError } from "../../errors/AppError";
+
 /**
  * Servicio encargado de gestionar la lógica de negocio relacionada
  * con los usuarios, delegando las operaciones de persistencia en UserRepository.
@@ -25,11 +27,11 @@ export class UserService {
   public async userRegister(user: CreateUser) : Promise<PublicUser> {
     const usernameExist = await this.userRepository.searchByUsername(user.nombre_usuario);
     if (usernameExist !== undefined) {
-      throw new Error("El nombre de usuario ya está en uso");
+      throw new ConflictError("El nombre de usuario ya está en uso");
     }
     const emailExist = await this.userRepository.searchByEmail(user.correo);
     if (emailExist !== undefined) {
-      throw new Error("El correo electrónico ya está registrado");
+      throw new ConflictError("El correo electrónico ya está registrado");
     }
     const passwordHash = await Bun.password.hash(user.password);
 
@@ -56,7 +58,7 @@ export class UserService {
     const user = await this.userRepository.searchByEmail(email);
 
     if (!user) {
-        throw new Error("Credenciales incorrectas");
+        throw new UnauthorizedError("Credenciales incorrectas");
     }
     const passwordValid = await Bun.password.verify(
       password,
@@ -64,7 +66,7 @@ export class UserService {
     );
 
     if (!passwordValid) {
-      throw new Error("Contraseña incorrecta");
+      throw new UnauthorizedError("Contraseña incorrecta");
     }
 
     const { password_hash, ...publicUser } = user;
@@ -83,7 +85,7 @@ export class UserService {
     const user = await this.userRepository.findById(id);
 
     if (!user) {
-        throw new Error("El usuario no existe");
+        throw new NotFoundError("Usuario");
     }
 
     return this.userRepository.delete(id);
@@ -102,12 +104,13 @@ export class UserService {
     const user = await this.userRepository.findById(id);
 
     if (!user) {
-        throw new Error("El usuario no existe");
+        throw new NotFoundError("Usuario");
     }
 
     const updatedUser = await this.userRepository.update(id, data);
 
     if (!updatedUser) {
+        // devuelve error 500 porque el usuario existe pero la actualización fallo
         throw new Error("No se pudo actualizar el usuario");
     }
 
@@ -127,7 +130,7 @@ export class UserService {
     const user = await this.userRepository.findById(id);
 
     if (!user) {
-      throw new Error("El usuario no existe");
+      throw new NotFoundError("Usuario");
     }
 
     const { password_hash, ...publicUser } = user;
