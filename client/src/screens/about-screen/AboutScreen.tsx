@@ -16,9 +16,9 @@ function AboutScreen() {
         {/* 1. SECCIÓN ORIGEN EN 2 COLUMNAS */}
         <section className="origin-section">
           <div className="origin-content">
-            <h1>¿Qué es GRAPHFLIX?</h1>
+            <h1>¿Qué es Graphflix?</h1>
             <p className="normal-text">
-              GRAPHFLIX es una plataforma de recomendación de obras y ocio basada en grafos, con el objetivo de ofrecer a los usuarios
+              <strong>Graphlix</strong> es una plataforma de recomendación de obras y ocio basada en grafos, con el objetivo de ofrecer a los usuarios
               una experiencia de descubrimiento más completa que la que proporcionan los algoritmos de recomendación tradicionales. 
               <br /><br />
               El proyecto nace de un trabajo universitario, pero con la ambición de convertirse en una herramienta útil y accesible para cualquier 
@@ -33,7 +33,7 @@ function AboutScreen() {
 
         {/* 2. EQUIPO */}
         <section className="about-section-block">
-          <h2>Las personas detrás de GRAPHFLIX</h2>
+          <h2>Las personas detrás de Graphflix</h2>
             <p className="normal-text">
               Somos un equipo de estudiantes del <strong>Grado en Ingeniería Informática </strong>en la <strong>Universidad de La Laguna</strong>, 
               apasionados por el desarrollo Full Stack. Nos motiva el aprendizaje continuo y el desafío de crear nuevas herramientas tecnológicas 
@@ -93,7 +93,7 @@ function AboutScreen() {
                     <img src={Vision} alt="Visión" className= "purpose-image" />
                     <h3>Nuestra Visión</h3>
                     <p className="normal-text">
-                        Consolidar GRAPHFLIX como una herramienta de referencia para quienes buscan descubrir contenido audiovisual de forma 
+                        Consolidar <strong>Graphflix</strong> como una herramienta de referencia para quienes buscan descubrir contenido audiovisual de forma 
                         sencilla e intuitiva, transformando la búsqueda tradicional en una experiencia interactiva y enriquecedora.
                     </p>
                 </div>
@@ -108,7 +108,7 @@ function AboutScreen() {
                 <h2>Descubrir una historia debería ser tan interesante como verla.</h2>
 
                 <p>
-                En GRAPHFLIX apostamos por una tecnología que da libertad al usuario,
+                En <strong>Graphflix</strong> apostamos por una tecnología que da libertad al usuario,
                 no que decide por él. Defendemos la transparencia, la exploración y
                 la conexión entre contenidos, permitiendo que cada persona construya
                 su propio recorrido por el universo cinematográfico.
