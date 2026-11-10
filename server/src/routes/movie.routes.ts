@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import { sql } from "../db/db";
+import { ValidationError } from "../errors/AppError"; 
 
 export const movies = new Hono();
 
@@ -20,12 +21,12 @@ movies.get("/movies/search", async (c) => {
     const actor = c.req.query("actor");
     const saga = c.req.query("saga");
 
-    if (!esEnteroPositivo(year)) return c.json({ error: "year debe ser un entero positivo" }, 400);
-    if (!esEnteroPositivo(from)) return c.json({ error: "from debe ser un entero positivo" }, 400);
-    if (!esEnteroPositivo(to)) return c.json({ error: "to debe ser un entero positivo" }, 400);
+    if (!esEnteroPositivo(year)) throw new ValidationError("year debe ser un entero positivo");
+    if (!esEnteroPositivo(from)) throw new ValidationError("from debe ser un entero positivo");
+    if (!esEnteroPositivo(to)) throw new ValidationError("to debe ser un entero positivo");
 
     if (from !== undefined && to !== undefined && Number(from) > Number(to)) {
-        return c.json({ error: "from no puede ser mayor que to" }, 400);
+       throw new ValidationError("from no puede ser mayor que to");
     }
 
     const resultados = await sql`SELECT o.id_obra, o.titulo, o.ano_publicacion, o.imagen_url
