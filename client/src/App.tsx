@@ -6,6 +6,8 @@ import viteLogo from './assets/vite.svg'
 import './App.css'
 import LoginScreen from './screens/login-screen/LoginScreen'
 import LandingScreen from './screens/landing-screen/LandingScreen'
+import RegisterScreen from './screens/register-screen/RegisterScreen'
+
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 
 function App() {
@@ -14,6 +16,7 @@ function App() {
       <Routes>
         <Route path="/" element={<LandingScreen />} />
         <Route path="/login" element={<LoginScreen />} />
+        <Route path="/register" element={<RegisterScreen />} />
       </Routes>
     </BrowserRouter>
   );

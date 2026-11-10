@@ -77,7 +77,8 @@ export class UserRepository {
   async create(user: CreateUser) : Promise<User> {
     const [newUser] = await sql`
       INSERT INTO usuario(nombre_usuario,correo,password_hash)
-      VALUES (${user.nombre_usuario}, ${user.correo}, ${user.password});
+      VALUES (${user.nombre_usuario}, ${user.correo}, ${user.password})
+      RETURNING *;
     `;
 
     return newUser;
@@ -98,7 +99,8 @@ export class UserRepository {
           SET
               correo = COALESCE(${data.correo ?? null}, correo),
               nombre_usuario = COALESCE(${data.nombre_usuario ?? null}, nombre_usuario)
-          WHERE id_usuario = ${id};
+          WHERE id_usuario = ${id}
+          RETURNING *;
       `;
 
       return user;
