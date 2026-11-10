@@ -1,6 +1,7 @@
 import { createMiddleware } from "hono/factory";
 import { getCookie } from "hono/cookie";
 import { verify } from "hono/jwt";
+import { UnauthorizedError } from "../errors/AppError";
 
 /**
  * Middleware de autenticación.
@@ -14,23 +15,18 @@ export const authMiddleware = createMiddleware(async (c, next) => {
   const token = getCookie(c, "access_token");
 
   if (!token) {
-    return c.json({
-      message: "Autenticación fallida"
-    }, 401);
+    throw new UnauthorizedError("Autenticación fallida");
   }
-
+  // Verificamos la firma y la expiración del JWT
+  let payload;
   try {
-    // Verificamos la firma y la expiración del JWT
-    const payload = await verify(token, Bun.env.TOKEN_SECRET_KEY!, "HS256");
-
-    // Guardamos el ID del usuario en el contexto
-    c.set('id_usuario', Number(payload.sub));
-
-    await next();
-
-  } catch (err) {
-    return c.json({
-      message: 'Token inválido o caducado'
-    }, 401)
+    payload = await verify(token, Bun.env.TOKEN_SECRET_KEY!, "HS256");
+  } catch(err) {
+    throw new UnauthorizedError("Token inválido o caducado");
   }
+
+  // Guardamos el ID del usuario en el contexto
+  c.set('id_usuario', Number(payload.sub));
+
+  await next();
 });

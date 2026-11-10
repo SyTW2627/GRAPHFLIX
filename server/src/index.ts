@@ -5,8 +5,12 @@ import { movies } from "./routes/movie.routes";
 import { recommendations } from "./routes/recommendation.routes";
 import { userRoutes } from "./routes/user.routes";
 import { authMiddleware } from "./auth/auth.middleware";
+import { errorHandler, notFoundHandler } from "./errors/errorHandler";
 
 const app = new Hono();
+
+app.onError(errorHandler);
+app.notFound(notFoundHandler);
 
 app.get("/", (c) => c.text("Graphflix API funcionando"));
 
