@@ -18,7 +18,7 @@ function LandingScreen() {
             <h1 className="landing-title">Conecta tus gustos y descubre nuevas historias</h1>
             
             <p className="landing-description">
-              GRAPHFLIX transforma tus gustos, intereses y descubrimientos en un universo visual interactivo. Conecta aquello que te apasiona, encuentra nuevas relaciones y descubre intereses que ni siquiera sabías que tenías.
+            <strong>Graphflix</strong> transforma tus gustos, intereses y descubrimientos en un universo visual interactivo. Conecta aquello que te apasiona, encuentra nuevas relaciones y descubre intereses que ni siquiera sabías que tenías.
             </p>        
 
             <div className="landing-buttons">
@@ -30,14 +30,14 @@ function LandingScreen() {
 
           <div className="landing-graph-container">
             <div className="graph-visual">
-              <img src={RedMorada} alt="Grafo de recomendaciones de GRAPHFLIX" />
+              <img src={RedMorada} alt="Grafo de recomendaciones de Graphflix" />
             </div>
           </div>
         </section>
 
         {/*CARACTERÍSTICAS*/}
         <section className="features-section">
-          <h2 className="section-title">¿Por qué usar GRAPHFLIX?</h2>
+          <h2 className="section-title">¿Por qué usar Graphflix?</h2>
 
           <div className="features-grid">
             <div className="feature-card">
@@ -59,7 +59,7 @@ function LandingScreen() {
 
         {/*CÓMO FUNCIONA */}
         <section id="como-funciona" className="how-it-works-section">
-          <h2 className="section-title">¿Cómo funciona GRAPHFLIX?</h2>
+          <h2 className="section-title">¿Cómo funciona Graphflix?</h2>
 
           <div className="steps-grid">
             <div className="step-card">
@@ -71,7 +71,7 @@ function LandingScreen() {
             <div className="step-card">
               <span className="step-number">02</span>
               <h3>Genera las conexiones</h3>
-              <p>GRAPHFLIX genera automáticamente las conexiones entre tus obras favoritas para que puedas explorarlas y descubrir nuevas recomendaciones.</p>
+              <p><strong>Graphflix</strong> genera automáticamente las conexiones entre tus obras favoritas para que puedas explorarlas y descubrir nuevas recomendaciones.</p>
             </div>
 
             <div className="step-card">
@@ -86,7 +86,7 @@ function LandingScreen() {
         <section className="final-section">
           <div className="final-banner">
             <h2>¿Listo para construir tu universo de entretenimiento?</h2>
-            <p>Únete a GRAPHFLIX hoy mismo y empieza a conectar tu catálogo personal.</p>
+            <p>Únete a <strong>Graphflix</strong> hoy mismo y empieza a conectar tu catálogo personal.</p>
             <Link className="btn-primary btn-large" to="/register"> 
               Crear mi mapa gratis
             </Link>

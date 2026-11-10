@@ -31,8 +31,6 @@ app.use("/favorites/*", authMiddleware);
 app.route("/", favorite);
 app.route("/", recommendations);
 
-console.log("DATABASE_URL:", process.env.DATABASE_URL);
-
 export default {
   port: 3000,
   fetch: app.fetch,
