@@ -1,3 +1,3 @@
-import { SQL } from "bun";
+import postgres from "postgres";
 
-export const sql = new SQL(process.env.DATABASE_URL!);
+export const sql = postgres(process.env.DATABASE_URL!);
