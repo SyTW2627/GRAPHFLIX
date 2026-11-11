@@ -4,6 +4,7 @@ import { favorite } from "./routes/favorite.routes";
 import { movies } from "./routes/movie.routes";
 import { recommendations } from "./routes/recommendation.routes";
 import { userRoutes } from "./routes/user.routes";
+import { map } from "./routes/map.routes";
 import { authMiddleware } from "./auth/auth.middleware";
 import { errorHandler, notFoundHandler } from "./errors/errorHandler";
 
@@ -26,6 +27,7 @@ app.use(
 
 app.route("/", movies);
 app.route("/", userRoutes)
+app.route("/", map); 
 
 app.use("/favorites/*", authMiddleware);
 app.route("/", favorite);
