@@ -12,7 +12,6 @@ export interface NewMap {
 }
 
 export interface UpdateMap {
-    id_mapa: number;
-    tipo_mapa: string;
-    nombre_mapa: string;
+    tipo_mapa?: string;
+    nombre_mapa?: string;
 }

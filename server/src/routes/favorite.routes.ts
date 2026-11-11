@@ -104,7 +104,7 @@ favorite.get("/favorites/:idUsuario", async (c) => {
 })
 
 // delete
-favorite.delete("favorites/:idUsuario/:idObra", async (c) => {
+favorite.delete("/favorites/:idUsuario/:idObra", async (c) => {
     const idUsuario = Number(c.req.param("idUsuario"));
     const idObra = Number(c.req.param("idObra"));
 

@@ -10,13 +10,12 @@ export class MapRepository {
         return newMap;
     }
 
-    async findById(id: number): Promise<Map> {
+    async findById(id: number): Promise<Map | undefined> {
         const [map] = await sql`
             SELECT *
             FROM mapa
             WHERE id_mapa = ${id}
         `;
-        if (!map) throw new Error(`No se ha encontrado el mapa con id ${id}`);
         return map;
     }
 
@@ -30,15 +29,15 @@ export class MapRepository {
         return maps;
     }
 
-    async update(data: UpdateMap): Promise<Map> {
+    async update(id: number, data: UpdateMap): Promise<Map | undefined> {
         const [map] = await sql`
            UPDATE mapa
-            SET tipo_mapa = ${data.tipo_mapa ?? null},
-                nombre_mapa = ${data.nombre_mapa ?? null}
-            WHERE id_mapa = ${data.id_mapa}
-            RETURNING *; 
+            SET
+                tipo_mapa = COALESCE(${data.tipo_mapa ?? null}, tipo_mapa),
+                nombre_mapa = COALESCE(${data.nombre_mapa ?? null}, nombre_mapa)
+            WHERE id_mapa = ${id}
+            RETURNING *;
         `;
-        if (!map) throw new Error(`No se ha encontrado el mapa con id ${data.id_mapa}`);
         return map;
     }
 
