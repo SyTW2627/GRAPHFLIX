@@ -8,7 +8,7 @@ import { map } from "./routes/map.routes";
 import { authMiddleware } from "./auth/auth.middleware";
 import { errorHandler, notFoundHandler } from "./errors/errorHandler";
 
-const app = new Hono();
+export const app = new Hono();
 
 app.onError(errorHandler);
 app.notFound(notFoundHandler);
@@ -32,8 +32,6 @@ app.route("/", map);
 app.use("/favorites/*", authMiddleware);
 app.route("/", favorite);
 app.route("/", recommendations);
-
-console.log("DATABASE_URL:", process.env.DATABASE_URL);
 
 export default {
   port: 3000,
