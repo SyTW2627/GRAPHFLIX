@@ -7,7 +7,7 @@ import { userRoutes } from "./routes/user.routes";
 import { authMiddleware } from "./auth/auth.middleware";
 import { errorHandler, notFoundHandler } from "./errors/errorHandler";
 
-const app = new Hono();
+export const app = new Hono();
 
 app.onError(errorHandler);
 app.notFound(notFoundHandler);
