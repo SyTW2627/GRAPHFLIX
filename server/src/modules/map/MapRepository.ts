@@ -1,4 +1,5 @@
 import type { Map, NewMap, UpdateMap } from "./map.model";
+import type { Arista } from "./map.model";
 import { sql } from "../../db/db";
 
 export class MapRepository {
@@ -49,4 +50,17 @@ export class MapRepository {
         `;
         return result.length > 0;
     } 
+
+    async createEdges(edges: { nodo_origen: number; nodo_destino: number }[]): Promise<Arista[]> {
+        if (edges.length === 0) {
+            throw new Error("No se proporcionaron aristas para crear");
+        }
+        const values = edges.map(edge => `(${edge.nodo_origen}, ${edge.nodo_destino})`).join(", ");
+        const aristas: Arista[] = await sql`
+            INSERT INTO arista (nodo_origen, nodo_destino)
+            VALUES ${values}
+            RETURNING *;
+        `;
+        return aristas;
+    }
 }

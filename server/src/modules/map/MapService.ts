@@ -1,4 +1,4 @@
-import type { Map, NewMap, UpdateMap } from "./map.model"
+import type { Map, NewMap, UpdateMap, Arista } from "./map.model"
 import type { MapRepository } from "./MapRepository";
 import { NotFoundError } from "../../errors/AppError";
 
@@ -39,6 +39,13 @@ export class MapService {
   async deleteMap(id: number, userId: number): Promise<boolean> {
     await this.getOwnedMap(id, userId);
     return this.mapRepository.delete(id);
+  }
+
+  async createMapEdges(edges: { nodo_origen: number; nodo_destino: number }[]): Promise<Arista[]> {
+    if (edges.length === 0) {
+      throw new Error("No se proporcionaron aristas para crear");
+    }
+    return await this.mapRepository.createEdges(edges);
   }
 
 }

@@ -1,5 +1,4 @@
-import { sql } from "../../db/db";
-
+import { sql } from "../../db/db"; 
 
 export class MovieRepository {
     async getFavoriteMovies(userId: number) {

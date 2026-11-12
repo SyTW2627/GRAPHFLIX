@@ -4,6 +4,7 @@
  * sobre su posición en el mapa de recomendaciones.
  */
 export interface Node {
+    id_nodo: number;
     id_obra: number;
     id_mapa: number;
     pos_x: number;
@@ -19,4 +20,11 @@ export interface UpdateNode {
     id_nodo: number;
     pos_x?: number;
     pos_y?: number;
+}
+
+export interface CreateNode {
+    id_obra: number;
+    id_mapa: number;
+    pos_x: number;
+    pos_y: number;
 }
