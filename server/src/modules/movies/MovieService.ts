@@ -2,6 +2,7 @@ import { MovieRepository } from "./MovieRepository";
 import { UserRepository } from "../users/UserRepository";
 import { UserService } from "../users/UserService";
 import { ValidationError } from "../../errors/AppError";
+import type {Pelicula} from "../../services/createGraph/type-model";
 
 const userRepository = new UserRepository();
 const userService = new UserService(userRepository);

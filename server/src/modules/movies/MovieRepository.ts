@@ -1,8 +1,9 @@
 import { sql } from "../../db/db"; 
+import type {Pelicula} from "../../services/createGraph/type-model";
 
 export class MovieRepository {
-    async getFavoriteMovies(userId: number) {
-        const favorites = await sql `
+    async getFavoriteMovies(userId: number): Promise<Pelicula[]> {
+        const favorites = await sql<Pelicula[]> `
             SELECT o.id_obra, o.titulo, o.ano_publicacion, o.imagen_url
             FROM favorita f
             JOIN obra o ON o.id_obra = f.id_obra
@@ -12,8 +13,8 @@ export class MovieRepository {
         return favorites;
     }
 
-    async getPopularMovies(limit: number) {
-        const populars = await sql `
+    async getPopularMovies(limit: number): Promise<Pelicula[]> {
+        const populars = await sql<Pelicula[]> `
             SELECT o.id_obra, o.titulo, o.ano_publicacion, o.imagen_url,
             COUNT(f.id_usuario)::int AS total_favoritos
             FROM obra o
@@ -26,8 +27,8 @@ export class MovieRepository {
         return populars;
     }
 
-    async getMovies(movies: number[]) {
-        const movieData = await sql `
+    async getMovies(movies: number[]): Promise<Pelicula[]> {
+        const movieData = await sql<Pelicula[]> `
             SELECT id_obra, titulo, ano_publicacion, imagen_url
             FROM obra
             WHERE id_obra = ANY(${movies})
@@ -47,8 +48,8 @@ export class MovieRepository {
         return relations;
     }
 
-    async insertMovies( movieIds: number[], userId: number) {
-        const insertados = await sql `
+    async insertMovies( movieIds: number[], userId: number): Promise<Pelicula[]> {
+        const insertados = await sql<Pelicula[]> `
             INSERT INTO favorita (id_usuario, id_obra)
             SELECT ${userId}, obra.id_obra
             FROM obra
@@ -74,8 +75,8 @@ export class MovieRepository {
         return sagas;
     }
 
-    async getAllIdMovies() {
-        const allMovies = await sql `SELECT id_obra FROM obra`;
+    async getAllIdMovies(): Promise<Pelicula[]> {
+        const allMovies = await sql<Pelicula[]> `SELECT id_obra FROM obra`;
         return allMovies;
     }
 

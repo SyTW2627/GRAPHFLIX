@@ -1,7 +1,6 @@
 import { Hono } from "hono";
 import { authMiddleware } from "../auth/auth.middleware";
-import { sql } from "../db/db";
-import { construirGrafo } from "../services/recommendation.services";
+import { construirGrafo } from "../services/createGraph/buildgraph";
 import { UserRepository } from "../modules/users/UserRepository";
 import { UserService } from "../modules/users/UserService";
 import { MovieRepository } from "../modules/movies/MovieRepository";
@@ -10,14 +9,10 @@ import { ValidationError } from "../errors/AppError";
 
 export const recommendations = new Hono();
 
-const userRepository = new UserRepository();
-const userService = new UserService(userRepository);
+const userService = new UserService(new UserRepository());
+const movieService = new MovieService(new MovieRepository());
 
-const movieRepository = new MovieRepository();
-const movieService = new MovieService(movieRepository);
-
-
-recommendations.get("/recommendations/:idUsuario", async (c) => {
+recommendations.get("/recommendations/:idUsuario", authMiddleware, async (c) => {
     const idUsuario = Number(c.req.param("idUsuario"));
     const limit = Number(c.req.query("limit") ?? 10);
 
@@ -25,24 +20,37 @@ recommendations.get("/recommendations/:idUsuario", async (c) => {
         throw new ValidationError("id_usuario debe ser un número entero positivo");
     }
 
-    const usuario = await userService.getUserById(idUsuario);
+    if (!Number.isInteger(limit) || limit <= 0 || limit > 100) {
+        throw new ValidationError("limit debe ser un entero entre 1 y 100");
+    }
 
-    // Obtener las películas favoritas del usuario
+    await userService.getUserById(idUsuario);
+
+    // CASO A: El usuario tiene películas favoritas
     const peliculasFavoritas = await movieService.findFavoriteMovies(idUsuario);
 
-    // CASO A: EL USUARIO TIENE PELÍCULAS FAVORITAS
     if (peliculasFavoritas.length > 0) {
-        const grafo = await construirGrafo(peliculasFavoritas);
+        const grafo = await construirGrafo(
+            peliculasFavoritas,
+            idUsuario,
+            "peliculas",
+            "Mapa de Recomendaciones"
+        );
         return c.json({ isColdStart: false, ...grafo });
     }
 
-    // CASO B: EL USUARIO NO TIENE FAVORITAS (COLD START)
+    // CASO B: Cold Start (sin favoritas -> películas populares)
     const peliculasPopulares = await movieService.findPopularMovies(limit);
 
     if (peliculasPopulares.length === 0) {
         return c.json({ isColdStart: true, nodes: [], edges: [] });
     }
 
-    const grafo = await construirGrafo(peliculasPopulares);
+    const grafo = await construirGrafo(
+        peliculasPopulares,
+        idUsuario,
+        "peliculas",
+        "Mapa de Películas Populares"
+    );
     return c.json({ isColdStart: true, ...grafo });
 });
