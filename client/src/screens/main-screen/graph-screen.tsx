@@ -68,7 +68,7 @@ function GraphScreen() {
             {/* AQUI VA EL GRAFO */}
 
 
-            <p className="graph-placeholder">Aquí va el grafo ;) </p>
+            <p className="graph-placeholder">Aquí va el grafo</p>
           </div>
         </main>
 
