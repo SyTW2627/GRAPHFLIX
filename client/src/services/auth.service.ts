@@ -64,3 +64,16 @@ export async function register(data: RegisterData) {
 
     return result as PublicUser;
 }
+
+// Función para cerrar sesión
+export async function logout(): Promise<void> {
+    const response = await fetch(`${API_URL}/logout`, {
+        method: "POST",
+        credentials: "include"
+    });
+
+    if (!response.ok && response.status !== 401) {
+        const result = await response.json().catch(() => ({}));
+        throw new Error(result.message || "Error al cerrar sesión");
+    }
+}

@@ -5,9 +5,10 @@ import logo from "../../assets/logo-graphflix.png";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import { login } from "../../services/auth.service";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function LoginScreen() {
+  const navigate = useNavigate();
   const [mostrarPassword, setMostrarPassword] = useState(false);
 
   // Datos del formulario.
@@ -29,7 +30,8 @@ function LoginScreen() {
 
       console.log("Usuario autenticado:", user);
 
-      // Más adelante redirigiremos al usuario a la página principal.
+      // redirige al usuario a la página principal.
+      navigate("/grafo", { replace: true });
 
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error al iniciar sesión");
