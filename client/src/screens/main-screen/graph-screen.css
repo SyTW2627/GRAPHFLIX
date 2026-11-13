@@ -1,0 +1,56 @@
+:root {
+  --gf-purple: #6d3fd9;
+  --gf-text: #1d1b2b;
+  --gf-muted: #5d5a70;
+  --gf-border: #e4e1ee;
+  --gf-surface: #f7f6fb;
+}
+
+.graph-screen {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  color: var(--gf-text);
+}
+
+.graph-layout {
+  position: relative;
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.graph-main {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background: #f1eff7;
+}
+
+.graph-map-title {
+  position: absolute;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  margin: 0;
+  padding: 0.4rem 1.8rem;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(29, 27, 43, 0.15);
+  font-size: 1.4rem;
+  white-space: nowrap;
+}
+
+.graph-canvas {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.graph-placeholder {
+  color: var(--gf-muted);
+}
