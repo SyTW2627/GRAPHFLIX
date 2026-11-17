@@ -19,6 +19,17 @@ interface PublicUser {
     correo: string;
 }
 
+
+// para guardar el usuario
+const USER_KEY = "graphflix_user";
+
+export function getStoreUSer(): PublicUser | null {
+    const raw = localStorage.getItem(USER_KEY);
+    if (!raw) return null;
+
+    return JSON.parse(raw) as PublicUser;
+}
+
 // Función para iniciar sesión.
 export async function login(data: LoginData): Promise<PublicUser> {
 
@@ -40,6 +51,7 @@ export async function login(data: LoginData): Promise<PublicUser> {
         throw new Error(result.message || "Error al iniciar sesión");
     }
 
+    localStorage.setItem(USER_KEY, JSON.stringify(result));
     return result as PublicUser;
 }
 
@@ -76,4 +88,5 @@ export async function logout(): Promise<void> {
         const result = await response.json().catch(() => ({}));
         throw new Error(result.message || "Error al cerrar sesión");
     }
+    localStorage.removeItem(USER_KEY);
 }
