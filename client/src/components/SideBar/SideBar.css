@@ -1,5 +1,9 @@
 .sidebar {
-  position: relative;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 10;
   width: 280px;
   flex-shrink: 0;
   background: var(--gf-surface, #f7f6fb);
@@ -29,6 +33,10 @@
   font-size: 1.4rem;
   text-align: center;
   color: var(--gf-text, #1d1b2b);
+}
+
+.sidebar:not(.sidebar--closed) {
+  box-shadow: 4px 0 12px rgba(29, 27, 43, 0.12);
 }
 
 /* Botón de plegar/desplegar (compartido con FavoritePanel) */
@@ -219,4 +227,104 @@
 
 .filter-chevron--open {
   transform: rotate(0deg);
+}
+
+.search-results {
+  padding: 0.75rem;
+}
+
+.search-message {
+  margin: 0.5rem 0 0;
+  font-size: 0.85rem;
+  color: var(--gf-muted, #5d5a70);
+}
+
+.search-message--error {
+  color: #c0392b;
+}
+
+.search-list {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 340px;
+  overflow-y: auto;
+}
+
+.search-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.search-item-poster {
+  width: 36px;
+  height: 54px;
+  flex-shrink: 0;
+  border-radius: 0.3rem;
+  object-fit: cover;
+  background: #e7defb;
+}
+
+.search-item-poster--empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gf-purple, #6d3fd9);
+  font-weight: 700;
+}
+
+.search-item-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.search-item-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--gf-text, #1d1b2b);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.search-item-year {
+  font-size: 0.78rem;
+  color: var(--gf-muted, #5d5a70);
+}
+
+.fav-btn {
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid var(--gf-border, #e4e1ee);
+  border-radius: 50%;
+  background: #fff;
+  color: var(--gf-purple, #6d3fd9);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.fav-btn:hover:not(:disabled) {
+  background: #f1ecfd;
+}
+
+.fav-btn--active {
+  background: var(--gf-purple, #6d3fd9);
+  color: #fff;
+}
+
+.fav-btn--active:hover:not(:disabled) {
+  background: #5a31b8;
+}
+
+.fav-btn:disabled {
+  opacity: 0.6;
+  cursor: wait;
 }

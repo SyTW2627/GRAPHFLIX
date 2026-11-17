@@ -1,11 +1,19 @@
 .favorites {
-  position: relative;
+  position: absolute; 
+  top: 0;
+  bottom: 0;
+  right: 0;
+  z-index: 10;
   width: 260px;
   flex-shrink: 0;
   background: var(--gf-surface, #f7f6fb);
   border-left: 1px solid var(--gf-border, #e4e1ee);
   overflow-y: auto;
   transition: width 0.2s ease;
+}
+
+.favorites:not(.favorites--closed) {
+  box-shadow: -4px 0 12px rgba(29, 27, 43, 0.12);
 }
 
 .favorites--closed {

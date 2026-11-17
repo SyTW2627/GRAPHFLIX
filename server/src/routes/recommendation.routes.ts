@@ -14,7 +14,7 @@ const movieService = new MovieService(new MovieRepository());
 
 recommendations.get("/recommendations/:idUsuario", authMiddleware, async (c) => {
     const idUsuario = Number(c.req.param("idUsuario"));
-    const limit = Number(c.req.query("limit") ?? 10);
+    const limit = Number(c.req.query("limit") ?? 5);
 
     if (!Number.isInteger(idUsuario) || idUsuario <= 0) {
         throw new ValidationError("id_usuario debe ser un número entero positivo");

@@ -1,15 +1,10 @@
+import type { Favorite } from "../../services/favorite.service"; 
 import "./FavoritePanel.css";
-
-export interface FavoriteMovie {
-  id: number;
-  title: string;
-  posterUrl?: string;
-}
 
 interface FavoritePanelProps {
   isOpen: boolean;
   onToggle: () => void;
-  favorites: FavoriteMovie[];
+  favorites: Favorite[];
 }
 
 function FavoritePanel({ isOpen, onToggle, favorites }: FavoritePanelProps) {
@@ -35,15 +30,15 @@ function FavoritePanel({ isOpen, onToggle, favorites }: FavoritePanelProps) {
           ) : (
             <ul className="favorites-grid">
               {favorites.map((movie) => (
-                <li key={movie.id}>
+                <li key={movie.id_obra}>
                   <button
                     className="favorite-card"
-                    title={movie.title}
+                    title={movie.titulo}
                   >
-                    {movie.posterUrl ? (
-                      <img src={movie.posterUrl} alt={`Póster de ${movie.title}`} />
+                    {movie.imagen_url ? (
+                      <img src={movie.imagen_url} alt={`Póster de ${movie.titulo}`} />
                     ) : (
-                      <span className="favorite-card-placeholder">{movie.title}</span>
+                      <span className="favorite-card-placeholder">{movie.titulo}</span>
                     )}
                   </button>
                 </li>

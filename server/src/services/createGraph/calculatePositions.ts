@@ -2,7 +2,7 @@ import type { Pelicula, PeliculaPosicion } from "./type-model";
 
 const CENTERX = 500;
 const CENTERY = 400;
-const RADIO_BASE = 140;
+const RADIO_BASE = 200;
 const DESFASE_ANGULAR = 0.35;
 
 export function calcularPosiciones( peliculasSemilla: Pelicula[], peliculasRecomendadas: Pelicula[],

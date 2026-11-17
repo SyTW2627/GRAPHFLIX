@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type { MovieResult } from "../../services/movie.service";
 import "./SideBar.css";
 
 export interface Filters {
@@ -28,6 +29,14 @@ interface SideBarProps {
   activeMap: string;
   onSelectMap: (name: string) => void;
   onAddMap: () => void;
+  // buscador
+  searchActive: boolean;
+  searching: boolean;
+  searchResults: MovieResult[];
+  favoriteIds: number[];
+  pendingFavoriteId: number | null;
+  actionError: string;
+  onToggleFavorite: (movie: MovieResult) => void;
 }
 
 // esto es de ejemplo hay que usar los que estan en la base de datos
@@ -45,6 +54,13 @@ function SideBar({
   activeMap,
   onSelectMap,
   onAddMap,
+  searchActive,
+  searching,
+  searchResults,
+  favoriteIds,
+  pendingFavoriteId,
+  actionError,
+  onToggleFavorite,
 }: SideBarProps) {
   const [filtersOpen, setFiltersOpen] = useState(true);
 
@@ -76,8 +92,57 @@ function SideBar({
             className="sidebar-input"
             value={search}
             onChange={(e) => onSearchChange(e.target.value)}
-            placeholder="Título, director, actor…"
+            placeholder="Buscar película..."
           />
+
+          {/* Resultados de búsqueda */}
+          {searchActive && (
+            <section className="sidebar-card search-results" aria-live="polite">
+              <h3 className="sidebar-card-title">Resultados</h3>
+
+              {actionError && <p className="search-message search-message--error">{actionError}</p>}
+              {searching && <p className="search-message">Buscando…</p>}
+              {!searching && searchResults.length === 0 && !actionError && (
+                <p className="search-message">No se encontraron películas.</p>
+              )}
+
+              <ul className="search-list">
+                {searchResults.map((movie) => {
+                  const isFav = favoriteIds.includes(movie.id_obra);
+                  const isPending = pendingFavoriteId === movie.id_obra;
+                  return (
+                    <li key={movie.id_obra} className="search-item">
+                      {movie.imagen_url ? (
+                        <img className="search-item-poster" src={movie.imagen_url} alt="" />
+                      ) : (
+                        <span className="search-item-poster search-item-poster--empty" aria-hidden="true">?</span>
+                      )}
+                      <div className="search-item-info">
+                        <span className="search-item-title">{movie.titulo}</span>
+                        {movie.ano_publicacion && (
+                          <span className="search-item-year">{movie.ano_publicacion}</span>
+                        )}
+                      </div>
+                      <button
+                        className={`fav-btn ${isFav ? "fav-btn--active" : ""}`}
+                        onClick={() => onToggleFavorite(movie)}
+                        disabled={pendingFavoriteId !== null}
+                        aria-pressed={isFav}
+                        aria-label={
+                          isFav
+                            ? `Quitar ${movie.titulo} de favoritos`
+                            : `Añadir ${movie.titulo} a favoritos`
+                        }
+                        title={isFav ? "Quitar de favoritos" : "Añadir a favoritos"}
+                      >
+                        {isPending ? "…" : isFav ? "♥" : "♡"}
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
+          )}
 
           {/* Filtros */}
           <section className="sidebar-card">

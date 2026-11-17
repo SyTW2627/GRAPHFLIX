@@ -66,3 +66,14 @@ map.delete("/maps/:id", authMiddleware, async (c) => {
     await mapService.deleteMap(id, c.get("id_usuario"));
     return c.body(null, 204);
 });
+
+
+// Obtener el contenido completo de un mapa
+map.get("/maps/:id/graph", authMiddleware, async (c) => {
+    const id = Number(c.req.param("id"));
+
+    if (!Number.isInteger(id) || id <= 0) throw new ValidationError("ID inválido");
+
+    const grafo = await mapService.getFullGraph(id, c.get("id_usuario"));
+    return c.json(grafo, 200);
+});
