@@ -5,8 +5,11 @@ import { UserService } from "../modules/users/UserService";
 import { MovieRepository } from "../modules/movies/MovieRepository";
 import { MovieService } from "../modules/movies/MovieService";
 import { ValidationError, NotFoundError } from "../errors/AppError";
+import { authMiddleware } from "../auth/auth.middleware";
+import { MapRepository } from "../modules/map/MapRepository";
+import { construirGrafo } from "../services/createGraph/buildgraph";
 
-export const favorite = new Hono();
+export const favorite = new Hono<{ Variables: { id_usuario: number } }>();
 
 const userRepository = new UserRepository();
 const userService = new UserService(userRepository);
@@ -14,10 +17,39 @@ const userService = new UserService(userRepository);
 const movieRepository = new MovieRepository();
 const movieService = new MovieService(movieRepository);
 
+const mapRepository = new MapRepository();
+
+async function reconstruirMapaUsuario(idUsuario: number) {
+    const obrasFavoritas = await movieService.findFavoriteMovies(idUsuario);
+    const maps = await mapRepository.findByUserId(idUsuario);
+    const mapaRecomendacion = maps.find(m => m.tipo_mapa === 'peliculas' || m.tipo_mapa === 'recommendation');
+
+    if (obrasFavoritas.length === 0) {
+        if (mapaRecomendacion) {
+            await mapRepository.delete(mapaRecomendacion.id_mapa);
+        }
+        return;
+    }
+
+    const tipoMapa = mapaRecomendacion?.tipo_mapa || "peliculas";
+    const nombreMapa = mapaRecomendacion?.nombre_mapa || "Mapa de Recomendaciones";
+
+    if (mapaRecomendacion) {
+        await mapRepository.delete(mapaRecomendacion.id_mapa);
+    }
+
+    await construirGrafo(
+        obrasFavoritas,
+        idUsuario,
+        tipoMapa,
+        nombreMapa
+    );
+}
+
 // post
-favorite.post("/favorites", async (c) => {
+favorite.post("/favorites", authMiddleware, async (c) => {
     const body = await c.req.json().catch(() => null);
-    const idUsuario = Number(body?.id_usuario);
+    const idUsuario = c.get("id_usuario");
     const idObra = Number(body?.id_obra);
 
     if (idUsuario <= 0 || idObra <= 0) {
@@ -32,11 +64,15 @@ favorite.post("/favorites", async (c) => {
  
     const ins = await sql `INSERT INTO favorita (id_usuario, id_obra)
                            VALUES (${idUsuario}, ${idObra})
-                           ON CONFLICT DO NOTHING`;
+                           ON CONFLICT DO NOTHING
+                           RETURNING id_obra`;
  
     if (ins.length === 0) {
         return c.json({ message: "Ya se encuentra en favoritos" }, 200);
     }
+
+    // Reconstruir
+    await reconstruirMapaUsuario(idUsuario);
     
     return c.json({ message: "Se ha añadido a favoritos"});
 })
@@ -49,7 +85,7 @@ favorite.post("/favorites", async (c) => {
  */
 favorite.post("/favorites/batch", async (c) => {
     const body = await c.req.json().catch(() => null);
-    const idUsuario = Number(body?.id_usuario);
+    const idUsuario = c.get("id_usuario");
     const idsObras = body?.ids_obras;
 
     if (!Number.isInteger(idUsuario) || idUsuario === 0) {
@@ -74,6 +110,10 @@ favorite.post("/favorites/batch", async (c) => {
     //Insertar obras recibidas sin duplicados
     const insertados = await movieService.insertFavoriteMovies(obrasValidas, idUsuario);
 
+    if (insertados.length > 0) {
+        await reconstruirMapaUsuario(idUsuario);
+    }
+
     return c.json({
         message: "Favoritos guardados correctamente",
         recibidos: idsObras.length,
@@ -85,7 +125,7 @@ favorite.post("/favorites/batch", async (c) => {
 
 // get
 favorite.get("/favorites/:idUsuario", async (c) => {
-    const idUsuario = Number(c.req.param("idUsuario"));
+    const idUsuario = c.get("id_usuario");
 
     if (!Number.isInteger(idUsuario) || idUsuario <= 0) {
         throw new ValidationError("id usuario debe ser un entero positivo");
@@ -105,7 +145,7 @@ favorite.get("/favorites/:idUsuario", async (c) => {
 
 // delete
 favorite.delete("/favorites/:idUsuario/:idObra", async (c) => {
-    const idUsuario = Number(c.req.param("idUsuario"));
+    const idUsuario = c.get("id_usuario");
     const idObra = Number(c.req.param("idObra"));
 
     if (!Number.isInteger(idUsuario) || idUsuario <= 0) {
@@ -129,5 +169,9 @@ favorite.delete("/favorites/:idUsuario/:idObra", async (c) => {
     if (borradas.length === 0) {
         throw new NotFoundError("Favorito");
     }
+
+    // Reconstruir 
+    await reconstruirMapaUsuario(idUsuario);
+
     return c.json({ message: "Eliminada de favoritos" });
 })
