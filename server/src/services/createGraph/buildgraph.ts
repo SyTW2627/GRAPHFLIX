@@ -67,8 +67,8 @@ export async function construirGrafo( peliculasSemilla: Pelicula[], idUsuario: n
 
     // Convertir aristas de similitud al formato del frontend
     const aristasSimilitud = aristasGuardadas.map(a => ({
-        source: Number(a.id_nodo_origen),
-        destiny: Number(a.id_nodo_destino)
+        source: Number(a.nodo_origen),
+        destiny: Number(a.nodo_destino)
     }));
 
 

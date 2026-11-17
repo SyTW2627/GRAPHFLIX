@@ -88,4 +88,10 @@ export class MovieRepository {
         `;
         return insertados;
     }
+
+    async deleteSimilitudObra() {
+        const del = await sql`
+            DELETE FROM similitud_obra;
+        `;
+    }
 }

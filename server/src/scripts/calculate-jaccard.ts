@@ -1,6 +1,7 @@
 import postgres from 'postgres';
 import {MovieRepository} from '../modules/movies/MovieRepository';
 import {MovieService} from '../modules/movies/MovieService';
+import { movies } from '../routes/movie.routes';
 
 const connectionString = process.env.DATABASE_URL;
 
@@ -19,6 +20,8 @@ async function calculateJaccard() {
 
     try {
         //Obras
+        await movieService.deleteSimilitudObra();
+
         const obras = await movieService.findAllIdMovies();
 
         const generos = await movieService.findGenres();
@@ -56,7 +59,7 @@ async function calculateJaccard() {
 
                 //Jaccard
                 const jaccard = interseccion / union;
-                if (jaccard > 0.2) resultados.push({ obra_origen_id: id1, obra_destino_id: id2, puntuacion: jaccard });
+                if (jaccard > 0.15) resultados.push({ obra_origen_id: id1, obra_destino_id: id2, puntuacion: jaccard });
             }
         }
 

@@ -18,14 +18,17 @@ function esEnteroPositivo(valor?: string): Boolean {
 
 // get query search?q= &genre= &year= &from= &to= &director= &actor= &saga=
 movies.get("/movies/search", async (c) => {
-    const q = c.req.query("q"); 
-    const genre = c.req.query("genre");
-    const year = c.req.query("year");
-    const from = c.req.query("from");
-    const to = c.req.query("to");
-    const director = c.req.query("director");
-    const actor = c.req.query("actor");
-    const saga = c.req.query("saga");
+    
+    const param = (name: string) => c.req.query(name)?.trim() || undefined;
+
+    const q = param("q") ?? null;
+    const genre = param("genre") ?? null;
+    const year = param("year");
+    const from = param("from");
+    const to = param("to");
+    const director = param("director") ?? null;
+    const actor = param("actor") ?? null;
+    const saga = param("saga") ?? null;
 
     if (!esEnteroPositivo(year)) throw new ValidationError("year debe ser un entero positivo");
     if (!esEnteroPositivo(from)) throw new ValidationError("from debe ser un entero positivo");
@@ -35,12 +38,16 @@ movies.get("/movies/search", async (c) => {
        throw new ValidationError("from no puede ser mayor que to");
     }
 
+    const yearN = year !== undefined ? Number(year) : null;
+    const fromN = from !== undefined ? Number(from) : null;
+    const toN = to !== undefined ? Number(to) : null;
+
     const resultados = await sql`SELECT o.id_obra, o.titulo, o.ano_publicacion, o.imagen_url
                                  from obra o
                                  WHERE (${q}::text IS NULL OR o.titulo ILIKE '%' || ${q}::text || '%')
-                                 AND (${year}::int IS NULL OR o.ano_publicacion = ${year}::int)
-                                 AND (${from}::int IS NULL OR o.ano_publicacion >= ${from}::int)
-                                 AND (${to}::int IS NULL OR o.ano_publicacion <= ${to}::int)
+                                 AND (${yearN}::int IS NULL OR o.ano_publicacion = ${yearN}::int)
+                                 AND (${fromN}::int IS NULL OR o.ano_publicacion >= ${fromN}::int)
+                                 AND (${toN}::int IS NULL OR o.ano_publicacion <= ${toN}::int)
                                  AND (${genre}::text IS NULL OR EXISTS (
                                          SELECT 1 FROM genero_obra go
                                          JOIN genero g ON g.id_genero = go.id_genero
@@ -60,7 +67,8 @@ movies.get("/movies/search", async (c) => {
                                          JOIN saga s ON s.id_saga = so.id_saga
                                          WHERE so.id_obra = o.id_obra
                                          AND s.nombre ILIKE '%' || ${saga}::text || '%'))
-                                 ORDER BY o.titulo`;
+                                 ORDER BY o.titulo
+                                 LIMIT 30`;
     return c.json(resultados, 200);
 })
 

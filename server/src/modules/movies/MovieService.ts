@@ -56,4 +56,8 @@ export class MovieService {
     async insertByBatchInSimilitudObra(lote: { obra_origen_id: number, obra_destino_id: number, puntuacion: number }[]) {
         return await this.movieRepository.insertByBatchInSimilitudObra(lote);
     }
+
+    async deleteSimilitudObra() {
+        return await this.movieRepository.deleteSimilitudObra();
+    }
 }
