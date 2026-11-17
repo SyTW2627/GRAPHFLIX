@@ -1,0 +1,23 @@
+/* El contenedor ocupa todo el .graph-canvas */
+.graph-vis {
+  position: absolute;
+  inset: 0;
+  outline: none;
+}
+
+/* Tooltip que vis-network crea al pasar el ratón por un nodo.
+   Se definen aquí los estilos para no depender del CSS de la librería. */
+div.vis-tooltip {
+  position: absolute;
+  visibility: hidden;
+  padding: 0.35rem 0.6rem;
+  border: 1px solid var(--gf-border);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--gf-text);
+  font-size: 0.85rem;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(29, 27, 43, 0.15);
+  pointer-events: none;
+  z-index: 5;
+}
