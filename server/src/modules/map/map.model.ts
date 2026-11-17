@@ -17,6 +17,6 @@ export interface UpdateMap {
 }
 
 export interface Arista {
-    id_nodo_origen: number;
-    id_nodo_destino: number;
+    nodo_origen: number;
+    nodo_destino: number;
 }

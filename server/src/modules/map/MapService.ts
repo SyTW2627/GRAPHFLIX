@@ -48,4 +48,73 @@ export class MapService {
     return await this.mapRepository.createEdges(edges);
   }
 
+  async getFullGraph(mapId: number, userId: number) {
+        await this.getOwnedMap(mapId, userId);
+
+        // obtener nodos y aristas
+        const nodosBD = await this.mapRepository.getNodesWithInfoByMapId(mapId, userId);
+        const aristasBD = await this.mapRepository.getEdgesByMapId(mapId);
+
+        const nodosPeliculas = nodosBD.map((n) => {
+            const posX = Number(n.pos_x);
+            const posY = Number(n.pos_y);
+            
+            // Reconstruir el nivel según el radio base (140px) usado en calculatePositions.ts
+            const distanciaCentro = Math.hypot(posX - 500, posY - 400);
+            const nivel = Math.max(0, Math.round(distanciaCentro / 140) - 1);
+
+            return {
+                id_nodo: Number(n.id_nodo),
+                id_obra: Number(n.id_obra),
+                id_mapa: Number(n.id_mapa),
+                titulo: n.titulo,
+                ano_publicacion: n.ano_publicacion,
+                descripcion: n.descripcion,
+                imagen_url: n.imagen_url,
+                nivel,
+                pos_x: posX,
+                pos_y: posY,
+            };
+        });
+
+        // nodo central
+        const nodoCentral = {
+            id_nodo: 0,
+            id_obra: null,
+            id_mapa: mapId,
+            nivel: -1,
+            pos_x: 500,
+            pos_y: 400,
+        };
+
+        // construir aristas
+        const nodosFavoritos = nodosBD.filter((n) => n.es_favorita);
+        let idsRaiz: number[] = [];
+
+        if (nodosFavoritos.length > 0) {
+            idsRaiz = nodosFavoritos.map((n) => Number(n.id_nodo));
+        } else {
+            idsRaiz = nodosPeliculas
+                .filter((n) => Math.hypot(n.pos_x - 500, n.pos_y - 400) <= 150)
+                .map((n) => n.id_nodo);
+        }
+
+        const aristasCentrales = idsRaiz.map((idNodo) => ({
+            source: 0,
+            destiny: idNodo,
+        }));
+
+        const aristasSimilitud = aristasBD.map((a) => ({
+            source: Number(a.nodo_origen),
+            destiny: Number(a.nodo_destino),
+        }));
+
+        return {
+            isColdStart: nodosFavoritos.length === 0,
+            id_mapa: mapId,
+            nodes: [nodoCentral, ...nodosPeliculas],
+            edges: [...aristasCentrales, ...aristasSimilitud],
+        };
+    }
+
 }
