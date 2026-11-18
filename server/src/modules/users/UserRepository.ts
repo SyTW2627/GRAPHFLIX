@@ -124,4 +124,13 @@ export class UserRepository {
 
       return result.length > 0;
   }
+
+  async setOnboarding(id: number): Promise<User | undefined> {
+    const  [user] = await sql<User[]>`
+      UPDATE usuario
+      SET onboarding_completado = TRUE
+      WHERE id_usuario = ${id}
+    `;
+    return user;
+  }
 }

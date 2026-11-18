@@ -35,6 +35,36 @@ export async function addFavorite(id_obra: number) {
     return response.json();
 }
 
+// Guarda las películas favoritas del usuario autenticado.
+export async function addManyFavorites(idsObras: number[]) {
+
+    const idsUnicos = [...new Set(idsObras)];
+    
+    if (idsUnicos.length !== 3) {
+        throw new Error("Debes seleccionar exactamente 3 películas");
+    }
+    
+    const response = await fetch(`${API_URL}/favorites/batch`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        credentials: "include",
+        body: JSON.stringify({
+            ids_obras: idsUnicos
+        })
+    });
+    
+    const result = await response.json().catch(() => ({}));
+    
+    if (!response.ok) {
+        throw new Error(result.message || "Error al guardar las películas favoritas");
+    }
+    
+    return result;
+    
+}
+
 // Eliminar de favoritos
 export async function removeFavorite(idUsuario: number, id_obra: number) {
     const response = await fetch(`${API_URL}/favorites/${idUsuario}/${id_obra}`, {

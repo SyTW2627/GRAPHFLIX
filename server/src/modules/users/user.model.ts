@@ -7,6 +7,7 @@ export interface User {
     nombre_usuario: string;
     correo: string;
     password_hash: string;
+    onboarding_completado: boolean;
 }
 
 /**
@@ -28,10 +29,12 @@ export interface CreateUser {
 export interface UpdateUser {
   correo?: string;
   nombre_usuario?: string;
+  onboarding_completado?: boolean;
 }
 
 export interface PublicUser {
   id_usuario: number;
   nombre_usuario: string;
   correo: string;
+  onboarding_completado: boolean;
 }

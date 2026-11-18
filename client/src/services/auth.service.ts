@@ -17,6 +17,7 @@ interface PublicUser {
     id_usuario: number;
     nombre_usuario: string;
     correo: string;
+    onboarding_completado: boolean;
 }
 
 
@@ -89,4 +90,17 @@ export async function logout(): Promise<void> {
         throw new Error(result.message || "Error al cerrar sesión");
     }
     localStorage.removeItem(USER_KEY);
+}
+
+export async function completeOnboarding(): Promise<void> {
+    const response = await fetch(`${API_URL}/me/onboarding`, {
+    method: "PATCH",
+    credentials: "include"
+    });
+    
+    const result = await response.json().catch(() => ({}));
+    
+    if (!response.ok) {
+        throw new Error(result.message || "Error al completar el onboarding");
+    }
 }

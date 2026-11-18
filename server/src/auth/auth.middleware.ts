@@ -3,6 +3,14 @@ import { getCookie } from "hono/cookie";
 import { verify } from "hono/jwt";
 import { UnauthorizedError } from "../errors/AppError";
 
+import "hono";
+
+declare module "hono" {
+  interface ContextVariableMap {
+    id_usuario: number;
+  }
+}
+
 /**
  * Middleware de autenticación.
  *

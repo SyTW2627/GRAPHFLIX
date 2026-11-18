@@ -130,7 +130,7 @@ userRoutes.patch('/users/:id', authMiddleware, async (c) => {
     throw new ValidationError("El cuerpo de la petición es obligatorio");
   }
 
-  const allowedUpdates = ['nombre_usuario', 'correo'];
+  const allowedUpdates = ['nombre_usuario', 'correo', 'onboarding_completado'];
   const actualUpdates = Object.keys(data);
   const isValidUpdate = actualUpdates.every((update) => allowedUpdates.includes(update));
     
@@ -141,6 +141,17 @@ userRoutes.patch('/users/:id', authMiddleware, async (c) => {
   const updatedUser = await userService.updateUser(id, data);
   return c.json(updatedUser, 200);
 
+});
+
+
+userRoutes.patch('/me/onboarding', async (c) => {
+  const id = c.get('id_usuario');
+
+  await userRepository.setOnboarding(id);
+
+  return c.json({
+    message: 'Onboarding completado correctamente'
+  }, 200);
 });
 
 /**
