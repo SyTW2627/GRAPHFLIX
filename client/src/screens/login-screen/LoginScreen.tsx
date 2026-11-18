@@ -29,9 +29,13 @@ function LoginScreen() {
       });
 
       console.log("Usuario autenticado:", user);
-
-      // redirige al usuario a la página principal.
-      navigate("/grafo", { replace: true });
+      if (!user.onboarding_completado) {
+        navigate("/onboarding")
+      } else {
+        // redirige al usuario a la página principal.
+        navigate("/grafo", { replace: true });
+      }
+      
 
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error al iniciar sesión");

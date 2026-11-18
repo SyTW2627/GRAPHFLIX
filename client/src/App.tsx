@@ -23,6 +23,7 @@ function App() {
         <Route path="/register" element={<RegisterScreen />} />
         <Route path="/sobre-nosotros" element={<AboutScreen />} />
         <Route path="/grafo" element={<GraphScreen />} />
+
       </Routes>
     </BrowserRouter>
   );
