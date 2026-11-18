@@ -1,3 +1,4 @@
+import { SessionExpiredError } from "./graph.service";
 const API_URL = `${import.meta.env.VITE_API_URL}/users`;
 
 // Datos necesarios para iniciar sesión.
@@ -92,15 +93,19 @@ export async function logout(): Promise<void> {
     localStorage.removeItem(USER_KEY);
 }
 
-export async function completeOnboarding(): Promise<void> {
+export async function completeOnboarding(): Promise<PublicUser> {
     const response = await fetch(`${API_URL}/me/onboarding`, {
-    method: "PATCH",
-    credentials: "include"
+        method: "PATCH",
+        credentials: "include"
     });
     
+    if (response.status === 401)  throw new SessionExpiredError();
     const result = await response.json().catch(() => ({}));
     
     if (!response.ok) {
         throw new Error(result.message || "Error al completar el onboarding");
     }
+
+    localStorage.setItem(USER_KEY, JSON.stringify(result));
+    return result as PublicUser;
 }
