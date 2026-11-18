@@ -144,14 +144,14 @@ userRoutes.patch('/users/:id', authMiddleware, async (c) => {
 });
 
 
-userRoutes.patch('/me/onboarding', async (c) => {
+
+userRoutes.patch('users/me/onboarding', authMiddleware, async (c) => {
   const id = c.get('id_usuario');
 
   await userRepository.setOnboarding(id);
+  const user = await userService.getUserById(id);
 
-  return c.json({
-    message: 'Onboarding completado correctamente'
-  }, 200);
+  return c.json( user, 200);
 });
 
 /**

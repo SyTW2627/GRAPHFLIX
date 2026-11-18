@@ -31,3 +31,17 @@ export async function searchMovies(params: SearchParams, signal?: AbortSignal): 
 
     return result as MovieResult[];
 }
+
+export async function getPopularMovies(limit = 12): Promise<MovieResult[]> {
+    const response = await fetch(
+        `${API_URL}/movies/popular?limit=${limit}`
+    );
+
+    const result = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+        throw new Error(result.message || "Error al obtener películas populares");
+    }
+
+    return result as MovieResult[];
+}

@@ -35,6 +35,9 @@ export async function addFavorite(id_obra: number) {
     return response.json();
 }
 
+// Número mínimo de películas que el usuario debe seleccionar en el onboarding
+export const MIN_ONBOARDING_MOVIES = 3; 
+
 // Guarda las películas favoritas del usuario autenticado.
 export async function addManyFavorites(idsObras: number[]) {
 

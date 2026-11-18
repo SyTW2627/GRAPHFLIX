@@ -18,7 +18,8 @@ export class MovieRepository {
             SELECT o.id_obra, o.titulo, o.ano_publicacion, o.imagen_url,
             COUNT(f.id_usuario)::int AS total_favoritos
             FROM obra o
-            JOIN favorita f ON f.id_obra = o.id_obra
+            LEFT JOIN favorita f ON f.id_obra = o.id_obra
+            WHERE o.imagen_url IS NOT NULL
             GROUP BY o.id_obra, o.titulo, o.ano_publicacion, o.imagen_url
             ORDER BY total_favoritos DESC, o.titulo ASC
             LIMIT ${limit}

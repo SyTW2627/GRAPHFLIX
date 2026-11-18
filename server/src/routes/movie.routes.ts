@@ -85,6 +85,12 @@ movies.get("/movies/popular", authMiddleware, async (c) => {
     return c.json(popularMovies, 200);
 });
 
+movies.get("/movies/popular", async (c) => {
+    const limit = Number(c.req.query("limit") ?? 12);
+    const populares = await movieService.findPopularMovies(limit);
+    return c.json(populares, 200);
+});
+
 movies.get("/movies/:id_obra", async (c) => {
   const id_obra = Number(c.req.param("id_obra"));
   
