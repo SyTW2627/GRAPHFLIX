@@ -95,13 +95,14 @@ function UserHeader() {
 
             <li role="none">
                {/** aqui tambien hay que ponerle otro /ayuda */}
-              <button
+              <Link
+                to="/help"
                 role="menuitem"
                 className="user-dropdown-item"
                 onClick={() => setMenuOpen(false)}
               >
                 Ayuda
-              </button>
+              </Link>
             </li>
 
             <li role="none">

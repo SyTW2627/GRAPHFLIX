@@ -107,6 +107,10 @@ export class UserService {
         throw new NotFoundError("Usuario");
     }
 
+    if (data.password) {
+      data.password = await Bun.password.hash(data.password);
+    }
+
     const updatedUser = await this.userRepository.update(id, data);
 
     if (!updatedUser) {
@@ -116,6 +120,26 @@ export class UserService {
     const {password_hash, ...publicUser} = updatedUser;
 
     return publicUser;
+  }
+
+  async changePassword(id: number, currentlyPassword: string, newPassword: string): Promise<void> {
+    if (newPassword.length < 8) {
+      throw new ValidationError("La nueva contraseña debe tener al menos 8 caracteres");
+    }
+  
+    // Debe devolver el usuario con su password_hash
+    const user = await this.userRepository.findById(id);
+    if (!user) {
+      throw new ValidationError("Usuario no encontrado");
+    }
+  
+    const coincide = await Bun.password.verify(currentlyPassword, user.password_hash);
+    if (!coincide) {
+      throw new ValidationError("La contraseña actual no es correcta");
+    }
+  
+    const hash = await Bun.password.hash(newPassword);
+    await this.userRepository.update(id, { password: hash });
   }
 
   /**

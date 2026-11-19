@@ -118,29 +118,42 @@ userRoutes.get('/users/:id', authMiddleware, async (c) => {
  * Solo permite actualizar nombre_usuario y correo. 
  * Devuelve: el usuario actualizado (200).
  */
-userRoutes.patch('/users/:id', authMiddleware, async (c) => {
-  const id = Number(c.req.param("id"));
-
-  if (!Number.isInteger(id) || id <= 0) {
-    throw new ValidationError("ID inválido");
-  }
+userRoutes.patch('/users/me', authMiddleware, async (c) => {
+  const id = c.get('id_usuario');
 
   const data = await c.req.json();
   if (!data) {
     throw new ValidationError("El cuerpo de la petición es obligatorio");
   }
 
-  const allowedUpdates = ['nombre_usuario', 'correo', 'onboarding_completado'];
+  const allowedUpdates = ['nombre_usuario', 'correo', 'onboarding_completado', 'password_actual', 'password_nueva'];
   const actualUpdates = Object.keys(data);
   const isValidUpdate = actualUpdates.every((update) => allowedUpdates.includes(update));
-    
   if (!isValidUpdate) {
     throw new ValidationError("Actualización no permitida");
   }
 
-  const updatedUser = await userService.updateUser(id, data);
-  return c.json(updatedUser, 200);
+  if (actualUpdates.length === 0) {
+    throw new ValidationError("No hay datos para actualizar");
+  }
 
+  const { password_actual, password_nueva, ...profileData } = data;
+
+  // Cambio de contraseña: solo si se envía alguno de los dos campos
+  if (password_actual !== undefined || password_nueva !== undefined) {
+    if (typeof password_actual !== 'string' || typeof password_nueva !== 'string') {
+      throw new ValidationError("Debes indicar la contraseña actual y la nueva");
+    }
+    await userService.changePassword(id, password_actual, password_nueva);
+
+    // Si solo se cambió la contraseña, no hay más que actualizar
+    if (Object.keys(profileData).length === 0) {
+      return c.json({ message: "Contraseña actualizada" }, 200);
+    }
+  }
+
+  const updatedUser = await userService.updateUser(id, profileData);
+  return c.json(updatedUser, 200);
 });
 
 

@@ -30,6 +30,7 @@ export interface UpdateUser {
   correo?: string;
   nombre_usuario?: string;
   onboarding_completado?: boolean;
+  password?: string;
 }
 
 export interface PublicUser {
