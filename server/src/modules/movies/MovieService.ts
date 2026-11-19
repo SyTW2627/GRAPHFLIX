@@ -1,8 +1,9 @@
 import { MovieRepository } from "./MovieRepository";
 import { UserRepository } from "../users/UserRepository";
 import { UserService } from "../users/UserService";
-import { ValidationError } from "../../errors/AppError";
 import type {Pelicula} from "../../services/createGraph/type-model";
+import type { MovieDetail } from "./movie.model";
+import { NotFoundError, ValidationError } from "../../errors/AppError";
 
 const userRepository = new UserRepository();
 const userService = new UserService(userRepository);
@@ -59,5 +60,9 @@ export class MovieService {
 
     async deleteSimilitudObra() {
         return await this.movieRepository.deleteSimilitudObra();
+    }
+
+    async findMovieDetails(movieId: number): Promise<MovieDetail | null> {
+        return await this.movieRepository.getMovieDetails(movieId);
     }
 }
