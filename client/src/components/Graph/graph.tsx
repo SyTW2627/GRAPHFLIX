@@ -7,6 +7,7 @@ import "./graph.css";
 interface GraphProps {
   nodes: GraphNode[];
   edges: GraphEdge[];
+  onSelectMovie?: (idObra: number) => void;
 }
 
 // nodo central
@@ -87,8 +88,13 @@ const OPTIONS: Options = {
   edges: { width: 1, smooth: false },
 };
 
-function Graph({ nodes, edges }: GraphProps) {
+function Graph({ nodes, edges, onSelectMovie }: GraphProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const onSelectMovieRef = useRef(onSelectMovie);
+  
+  useEffect(() => {
+    onSelectMovieRef.current = onSelectMovie;
+  }, [onSelectMovie]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -104,6 +110,20 @@ function Graph({ nodes, edges }: GraphProps) {
 
     // lo centra en la pantalla
     network.once("afterDrawing", () => network.fit({ animation: false }));
+
+    network.on("click", (params) => {
+      if (params.nodes.length === 0) return;
+        const clicked = nodes.find((n) => n.id_nodo === params.nodes[0]);
+        if (!clicked || clicked.id_nodo === CENTRAL_ID || clicked.id_obra === null) return;
+        onSelectMovieRef.current?.(clicked.id_obra);
+    });
+
+    network.on("hoverNode", (params) => {
+      if (params.node !== CENTRAL_ID) containerRef.current!.style.cursor = "pointer";
+    });
+    network.on("blurNode", () => {
+      containerRef.current!.style.cursor = "default";
+    });
 
     return () => network.destroy();
   }, [nodes, edges]);

@@ -37,6 +37,7 @@ interface SideBarProps {
   pendingFavoriteId: number | null;
   actionError: string;
   onToggleFavorite: (movie: MovieResult) => void;
+  onOpenMovie: (idObra: number) => void;
 }
 
 // esto es de ejemplo hay que usar los que estan en la base de datos
@@ -61,6 +62,7 @@ function SideBar({
   pendingFavoriteId,
   actionError,
   onToggleFavorite,
+  onOpenMovie,
 }: SideBarProps) {
   const [filtersOpen, setFiltersOpen] = useState(true);
 
@@ -118,7 +120,17 @@ function SideBar({
                         <span className="search-item-poster search-item-poster--empty" aria-hidden="true">?</span>
                       )}
                       <div className="search-item-info">
-                        <span className="search-item-title">{movie.titulo}</span>
+                        <span
+                          className="search-item-title search-item-title--link"
+                          role="link"
+                          tabIndex={0}
+                          onClick={() => onOpenMovie(movie.id_obra)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") onOpenMovie(movie.id_obra);
+                          }}
+                        >
+                          {movie.titulo}
+                        </span>
                         {movie.ano_publicacion && (
                           <span className="search-item-year">{movie.ano_publicacion}</span>
                         )}

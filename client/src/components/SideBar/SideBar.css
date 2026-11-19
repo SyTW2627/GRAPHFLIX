@@ -328,3 +328,17 @@
   opacity: 0.6;
   cursor: wait;
 }
+
+.search-item-title--link {
+  cursor: pointer;
+}
+
+.search-item-title--link:hover {
+  color: var(--gf-purple, #6d3fd9);
+  text-decoration: underline;
+}
+
+.search-item-title--link:focus-visible {
+  outline: 2px solid var(--gf-purple, #6d3fd9);
+  outline-offset: 2px;
+}

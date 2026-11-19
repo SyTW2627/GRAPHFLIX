@@ -220,6 +220,8 @@ function GraphScreen() {
     setActiveMap(tempMap);
   };
 
+  const handleOpenMovie = (idObra: number) => navigate(`/pelicula/${idObra}`);
+
   const summary: Summary = {
     movies: graph ? graph.nodes.filter((n) => n.id_obra !== null).length : 0,
     favorites: favorites.length,
@@ -255,6 +257,7 @@ function GraphScreen() {
           pendingFavoriteId={pendingFavoriteId}
           actionError={actionError}
           onToggleFavorite={handleToggleFavorite}
+          onOpenMovie={handleOpenMovie}
         />
 
         <main className="graph-main">
@@ -268,7 +271,7 @@ function GraphScreen() {
             )}
             {!loading && !error && graph && hayPeliculas && (
               <>
-                <Graph nodes={graph.nodes} edges={graph.edges} />
+                <Graph nodes={graph.nodes} edges={graph.edges} onSelectMovie={handleOpenMovie} />
                 {graph.isColdStart && (
                   <p className="graph-notice">
                     Estas son las películas más populares. Añade favoritas para ver recomendaciones.
