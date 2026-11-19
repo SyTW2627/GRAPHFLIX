@@ -182,7 +182,7 @@ describe("User Routes", () => {
       // Comprueba que se haya enviado la cookie JWT.
       expect(response.headers["set-cookie"]).toBeDefined();
 
-      const cookies = response.headers["set-cookie"].join(";");
+      const cookies = response.headers["set-cookie"]!.join(";");
 
       expect(cookies).toContain("access_token=");
       expect(cookies.toLowerCase()).toContain("httponly");
@@ -311,10 +311,10 @@ describe("User Routes", () => {
   });
 
   // --------------------------------------------------
-  // PATCH /users/:id
+  // PATCH /users/me
   // --------------------------------------------------
 
-  describe("PATCH /users/:id", () => {
+  describe("PATCH /users/me", () => {
 
     it("debería actualizar parcialmente los datos del usuario", async () => {
       const { credentials, user } = await registerUser();
@@ -324,7 +324,7 @@ describe("User Routes", () => {
       const newUsername = `updated-${Date.now()}`;
 
       const response = await agent
-        .patch(`/users/${user.id_usuario}`)
+        .patch("/users/me")
         .send({
           nombre_usuario: newUsername
         });
@@ -332,20 +332,210 @@ describe("User Routes", () => {
       expect(response.status).toBe(200);
       expect(response.body.nombre_usuario).toBe(newUsername);
       expect(response.body.correo).toBe(user.correo);
+
+      // El hash nunca debe llegar al cliente.
+      expect(response.body).not.toHaveProperty("password");
+      expect(response.body).not.toHaveProperty("password_hash");
     });
 
-    it("no debería permitir actualizar campos no autorizados", async () => {
+    it("debería actualizar el correo del usuario", async () => {
       const { credentials, user } = await registerUser();
 
       const agent = await createAuthenticatedAgent(credentials);
 
+      const newEmail = `updated-${Date.now()}@graphflix.com`;
+
       const response = await agent
-        .patch(`/users/${user.id_usuario}`)
+        .patch("/users/me")
+        .send({
+          correo: newEmail
+        });
+
+      expect(response.status).toBe(200);
+      expect(response.body.correo).toBe(newEmail);
+      expect(response.body.nombre_usuario).toBe(user.nombre_usuario);
+    });
+
+    it("no debería permitir actualizar campos no autorizados", async () => {
+      const { credentials } = await registerUser();
+
+      const agent = await createAuthenticatedAgent(credentials);
+
+      // "password" ya no está permitido: hay que usar password_actual y password_nueva.
+      const response = await agent
+        .patch("/users/me")
         .send({
           password: "newPassword123"
         });
 
       expect(response.status).toBe(400);
+      expect(response.body.error.message).toBe("Actualización no permitida");
+    });
+
+    it("no debería permitir modificar usuarios sin autenticación", async () => {
+      const response = await request(server)
+        .patch("/users/me")
+        .send({
+          nombre_usuario: "sin-sesion"
+        });
+
+      expect(response.status).toBe(401);
+    });
+
+    it("debería rechazar un cuerpo vacío al actualizar", async () => {
+      const { credentials } = await registerUser();
+
+      const agent = await createAuthenticatedAgent(credentials);
+
+      const response = await agent
+        .patch("/users/me")
+        .set("Content-Type", "application/json")
+        .send("null");
+
+      expect(response.status).toBe(400);
+      expect(response.body.error.message).toBe(
+        "El cuerpo de la petición es obligatorio"
+      );
+    });
+
+    it("debería rechazar una actualización sin datos", async () => {
+      const { credentials } = await registerUser();
+
+      const agent = await createAuthenticatedAgent(credentials);
+
+      const response = await agent
+        .patch("/users/me")
+        .send({});
+
+      expect(response.status).toBe(400);
+      expect(response.body.error.message).toBe("No hay datos para actualizar");
+    });
+
+    // ------------------------------------------------
+    // Cambio de contraseña
+    // ------------------------------------------------
+
+    it("debería cambiar la contraseña con la contraseña actual correcta", async () => {
+      const { credentials } = await registerUser();
+
+      const agent = await createAuthenticatedAgent(credentials);
+
+      const newPassword = "newPassword123";
+
+      const response = await agent
+        .patch("/users/me")
+        .send({
+          password_actual: credentials.password,
+          password_nueva: newPassword
+        });
+
+      expect(response.status).toBe(200);
+
+      // Con la contraseña nueva se puede iniciar sesión...
+      const loginWithNew = await request(server)
+        .post("/users/login")
+        .send({
+          correo: credentials.correo,
+          password: newPassword
+        });
+
+      expect(loginWithNew.status).toBe(200);
+
+      // ...y con la antigua ya no.
+      const loginWithOld = await request(server)
+        .post("/users/login")
+        .send(credentials);
+
+      expect(loginWithOld.status).not.toBe(200);
+    });
+
+    it("debería actualizar a la vez el nombre y la contraseña", async () => {
+      const { credentials } = await registerUser();
+
+      const agent = await createAuthenticatedAgent(credentials);
+
+      const newUsername = `updated-${Date.now()}`;
+      const newPassword = "newPassword123";
+
+      const response = await agent
+        .patch("/users/me")
+        .send({
+          nombre_usuario: newUsername,
+          password_actual: credentials.password,
+          password_nueva: newPassword
+        });
+
+      expect(response.status).toBe(200);
+      expect(response.body.nombre_usuario).toBe(newUsername);
+
+      const loginWithNew = await request(server)
+        .post("/users/login")
+        .send({
+          correo: credentials.correo,
+          password: newPassword
+        });
+
+      expect(loginWithNew.status).toBe(200);
+    });
+
+    it("debería rechazar el cambio si la contraseña actual es incorrecta", async () => {
+      const { credentials } = await registerUser();
+
+      const agent = await createAuthenticatedAgent(credentials);
+
+      const response = await agent
+        .patch("/users/me")
+        .send({
+          password_actual: "incorrecta123",
+          password_nueva: "newPassword123"
+        });
+
+      expect(response.status).toBe(400);
+      expect(response.body.error.message).toBe(
+        "La contraseña actual no es correcta"
+      );
+
+      // La contraseña original sigue funcionando.
+      const login = await request(server)
+        .post("/users/login")
+        .send(credentials);
+
+      expect(login.status).toBe(200);
+    });
+
+    it("debería rechazar el cambio si falta uno de los dos campos de contraseña", async () => {
+      const { credentials } = await registerUser();
+
+      const agent = await createAuthenticatedAgent(credentials);
+
+      const response = await agent
+        .patch("/users/me")
+        .send({
+          password_nueva: "newPassword123"
+        });
+
+      expect(response.status).toBe(400);
+      expect(response.body.error.message).toBe(
+        "Debes indicar la contraseña actual y la nueva"
+      );
+    });
+
+    it("debería rechazar una nueva contraseña demasiado corta", async () => {
+      const { credentials } = await registerUser();
+
+      const agent = await createAuthenticatedAgent(credentials);
+
+      const response = await agent
+        .patch("/users/me")
+        .send({
+          password_actual: credentials.password,
+          password_nueva: "corta"
+        });
+
+      expect(response.status).toBe(400);
+      expect(response.body.error.message).toBe(
+        "La nueva contraseña debe tener al menos 8 caracteres"
+      );
     });
 
   });
