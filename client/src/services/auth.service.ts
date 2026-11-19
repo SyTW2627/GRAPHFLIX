@@ -21,6 +21,15 @@ interface PublicUser {
     onboarding_completado: boolean;
 }
 
+// Datos que se pueden modificar del usuario (todos opcionales:
+// solo se envían los que han cambiado).
+// Para cambiar la contraseña hay que enviar password_actual y password_nueva.
+interface UpdateUserData {
+    nombre_usuario?: string;
+    correo?: string;
+    password_actual?: string;
+    password_nueva?: string;
+}
 
 // para guardar el usuario
 const USER_KEY = "graphflix_user";
@@ -56,6 +65,8 @@ export async function login(data: LoginData): Promise<PublicUser> {
     localStorage.setItem(USER_KEY, JSON.stringify(result));
     return result as PublicUser;
 }
+
+
 
 export async function register(data: RegisterData) {
     const response = await fetch(`${API_URL}/register`, {
@@ -108,4 +119,36 @@ export async function completeOnboarding(): Promise<PublicUser> {
 
     localStorage.setItem(USER_KEY, JSON.stringify(result));
     return result as PublicUser;
+}
+
+export async function updateUser(data: UpdateUserData): Promise<PublicUser | null> {
+    const response = await fetch(`${API_URL}/me`, {
+        method: "PATCH",
+ 
+        headers: {
+            "Content-Type": "application/json"
+        },
+ 
+        credentials: "include",
+ 
+        body: JSON.stringify(data)
+    });
+ 
+    if (response.status === 401) throw new SessionExpiredError();
+ 
+    const result = await response.json().catch(() => ({}));
+ 
+    if (!response.ok) {
+        throw new Error(result.message || "Error al actualizar el usuario");
+    }
+ 
+    // Si el backend devuelve el usuario, lo guardamos para que el resto
+    // de la app vea el cambio al instante. Al cambiar solo la contraseña
+    // puede no devolver nada.
+    if (result.id_usuario) {
+        localStorage.setItem(USER_KEY, JSON.stringify(result));
+        return result as PublicUser;
+    }
+ 
+    return null;
 }
