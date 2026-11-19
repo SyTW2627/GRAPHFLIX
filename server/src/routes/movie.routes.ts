@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { sql } from "../db/db";
-import { ValidationError } from "../errors/AppError"; 
+import { ValidationError, NotFoundError } from "../errors/AppError"; 
 import { MovieRepository } from "../modules/movies/MovieRepository";
 import { MovieService } from "../modules/movies/MovieService";
 
@@ -80,11 +80,14 @@ movies.get("/movies/popular", async (c) => {
 
 movies.get("/movies/:id_obra", async (c) => {
   const id_obra = Number(c.req.param("id_obra"));
-  
+
   if (!Number.isInteger(id_obra) || id_obra <= 0) {
     throw new ValidationError("ID inválido");
   }
 
-  const obra = await movieService.findMovies([id_obra]);
+  const obra = await movieService.findMovieDetails(id_obra);
+  if (!obra) {
+    throw new NotFoundError("Obra no encontrada");
+  }
   return c.json(obra, 200);
 });

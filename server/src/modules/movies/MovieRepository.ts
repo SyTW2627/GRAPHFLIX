@@ -1,5 +1,6 @@
 import { sql } from "../../db/db"; 
 import type {Pelicula} from "../../services/createGraph/type-model";
+import type { MovieDetail } from "./movie.model";
 
 export class MovieRepository {
     async getFavoriteMovies(userId: number): Promise<Pelicula[]> {
@@ -95,4 +96,48 @@ export class MovieRepository {
             DELETE FROM similitud_obra;
         `;
     }
+
+    async getMovieDetails(movieId: number): Promise<MovieDetail | null> {
+        const [obra] = await sql`
+            SELECT id_obra, titulo, ano_publicacion, descripcion, imagen_url
+            FROM obra
+            WHERE id_obra = ${movieId}
+        `;
+
+        if (!obra) return null;
+
+        const generos = await sql`
+            SELECT g.nombre AS genero
+            FROM genero_obra go
+            JOIN genero g ON g.id_genero = go.id_genero
+            WHERE go.id_obra = ${movieId}
+        `;
+        
+        const personas = await sql`
+            SELECT p.nombre, po.tipo
+            FROM persona_obra po
+            JOIN persona p ON p.id_persona = po.id_persona
+            WHERE po.id_obra = ${movieId}
+        `;
+
+        const sagas = await sql`
+            SELECT s.nombre AS saga
+            FROM saga_obra so
+            JOIN saga s ON s.id_saga = so.id_saga
+            WHERE so.id_obra = ${movieId}
+        `;
+
+        return {
+            id_obra: obra.id_obra,
+            titulo: obra.titulo,
+            ano_publicacion: obra.ano_publicacion,
+            descripcion: obra.descripcion,
+            imagen_url: obra.imagen_url,
+            generos: generos.map(g => g.genero),
+            directores: personas.filter(p => p.tipo === 'director').map(p => p.nombre),
+            reparto: personas.filter(p => p.tipo === 'actor').map(p => p.nombre),
+            sagas: sagas.map(s => s.saga)
+        }  as MovieDetail;
+    } 
+       
 }
