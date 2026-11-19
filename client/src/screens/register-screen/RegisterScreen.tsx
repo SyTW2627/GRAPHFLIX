@@ -4,11 +4,14 @@ import "./RegisterScreen.css";
 import logo from "../../assets/logo-graphflix.png";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
-import { register } from "../../services/auth.service";
+
+import { register, login } from "../../services/auth.service";
+import { useNavigate } from "react-router-dom";
 
 function RegisterScreen() {
   const [mostrarPassword, setMostrarPassword] = useState(false);
   const [mostrarConfirmarPassword, setMostrarConfirmarPassword] = useState(false);
+  const navigate = useNavigate();
 
   // Datos del formulario.
   const [nombre_usuario, setNombreUsuario] = useState("");
@@ -38,7 +41,8 @@ function RegisterScreen() {
 
       console.log("Usuario registrado:", user);
 
-      // Más adelante redirigiremos al usuario a la página principal.
+      await login({ correo, password });
+      navigate("/login");
 
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error al registrarse");

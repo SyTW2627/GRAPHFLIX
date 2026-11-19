@@ -3,6 +3,7 @@ import { sql } from "../db/db";
 import { ValidationError } from "../errors/AppError"; 
 import { MovieRepository } from "../modules/movies/MovieRepository";
 import { MovieService } from "../modules/movies/MovieService";
+import { authMiddleware } from "../auth/auth.middleware";
 
 
 export const movies = new Hono();
@@ -70,7 +71,25 @@ movies.get("/movies/search", async (c) => {
                                  ORDER BY o.titulo
                                  LIMIT 30`;
     return c.json(resultados, 200);
-})
+});
+
+movies.get("/movies/popular", authMiddleware, async (c) => {
+    const limit = Number(c.req.query("limit") ?? 12);
+
+    if (!Number.isInteger(limit) || limit <= 0 || limit > 100) {
+        throw new ValidationError("limit debe ser un entero entre 1 y 100");
+    }
+
+    const popularMovies = await movieService.findPopularMovies(limit);
+
+    return c.json(popularMovies, 200);
+});
+
+movies.get("/movies/popular", async (c) => {
+    const limit = Number(c.req.query("limit") ?? 12);
+    const populares = await movieService.findPopularMovies(limit);
+    return c.json(populares, 200);
+});
 
 movies.get("/movies/:id_obra", async (c) => {
   const id_obra = Number(c.req.param("id_obra"));
@@ -82,3 +101,5 @@ movies.get("/movies/:id_obra", async (c) => {
   const obra = await movieService.findMovies([id_obra]);
   return c.json(obra, 200);
 });
+
+

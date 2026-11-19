@@ -10,6 +10,7 @@ import LoginScreen from './screens/login-screen/LoginScreen'
 import LandingScreen from './screens/landing-screen/LandingScreen'
 import RegisterScreen from './screens/register-screen/RegisterScreen'
 import AboutScreen from './screens/about-screen/AboutScreen'
+import OnboardingScreen from './screens/onboarding-screen/OnboardingScreen'
 
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 
@@ -23,7 +24,7 @@ function App() {
         <Route path="/register" element={<RegisterScreen />} />
         <Route path="/sobre-nosotros" element={<AboutScreen />} />
         <Route path="/grafo" element={<GraphScreen />} />
-        
+        <Route path="/onboarding" element={<OnboardingScreen />} />
       </Routes>
     </BrowserRouter>
   );

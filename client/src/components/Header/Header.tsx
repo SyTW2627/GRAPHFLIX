@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import "./Header.css";
 import logo from "../../assets/logo-graphflix.png";
 
-function Header({ isLanding = false }) {
+function Header({ isLanding = false , isonboarding = false}) {
   return (
     <header className="navbar">
       <div className="navbar-brand">
@@ -27,15 +27,16 @@ function Header({ isLanding = false }) {
           </a>
         </nav>
       )}
-
-      <nav className="navbar-actions">
-        <Link to="/login" className="nav-btn btn-secondary">
-          Iniciar sesión
-        </Link>
-        <Link to="/register" className="nav-btn btn-primary">
-          Registrarse
-        </Link>
-      </nav>
+      {!isonboarding && (
+        <nav className="navbar-actions">
+          <Link to="/login" className="nav-btn btn-secondary">
+            Iniciar sesión
+          </Link>
+          <Link to="/register" className="nav-btn btn-primary">
+            Registrarse
+          </Link>
+        </nav>
+      )}
     </header>
   );
 }
