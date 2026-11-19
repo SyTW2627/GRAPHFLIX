@@ -11,6 +11,7 @@ import LandingScreen from './screens/landing-screen/LandingScreen'
 import RegisterScreen from './screens/register-screen/RegisterScreen'
 import AboutScreen from './screens/about-screen/AboutScreen'
 import OnboardingScreen from './screens/onboarding-screen/OnboardingScreen'
+import MovieScreen from './screens/movie-screen/MovieScreen';
 import HelpScreen from './screens/help-screen/HelpScreen'
 
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
@@ -27,6 +28,8 @@ function App() {
         <Route path="/sobre-nosotros" element={<AboutScreen />} />
         <Route path="/grafo" element={<GraphScreen />} />
         <Route path="/onboarding" element={<OnboardingScreen />} />
+        <Route path="/pelicula/:id_obra" element={<MovieScreen />} />
+
         <Route path="/help" element={<HelpScreen />} />
         <Route path="/perfil" element={<AccountScreen />} />
       </Routes>

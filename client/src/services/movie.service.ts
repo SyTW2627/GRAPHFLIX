@@ -1,3 +1,15 @@
+export interface MovieDetail {
+    id_obra: number;
+    titulo: string;
+    ano_publicacion: number | null;
+    descripcion: string | null;
+    imagen_url: string | null;
+    generos: string[];
+    directores: string[];
+    reparto: string[];
+    sagas: string[];
+}
+
 const API_URL = import.meta.env.VITE_API_URL;
 
 export interface MovieResult{
@@ -44,4 +56,15 @@ export async function getPopularMovies(limit = 12): Promise<MovieResult[]> {
     }
 
     return result as MovieResult[];
+}
+
+// get /movies/:id_obra
+export async function getMovieById(idObra: number, signal?: AbortSignal): Promise<MovieDetail> {
+    const response = await fetch(`${API_URL}/movies/${idObra}`, { signal });
+    const result = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+        throw new Error(result.error?.message || result.message || "Error al cargar la película");
+    }
+    return result as MovieDetail;
 }

@@ -51,10 +51,49 @@ const addUser = async () => {
   return user;
 };
 
+// Registra un usuario mediante la API, inicia sesión y devuelve un agente
+// que conserva la cookie de sesión.
+const createAuthenticatedAgent = async () => {
+  const id = uniqueId();
+
+  const credentials = {
+    nombre_usuario: `test-${id}`,
+    correo: `test-${id}@graphflix.com`,
+    password: "password123",
+  };
+
+  const registerResponse = await request(server)
+    .post("/users/register")
+    .send(credentials);
+
+  if (registerResponse.status !== 201) {
+    throw new Error(`Error registrando usuario: ${JSON.stringify(registerResponse.body)}`);
+  }
+
+  // se borrará en el afterEach
+  createdUserIds.push(registerResponse.body.id_usuario);
+
+  const agent = request.agent(server);
+
+  const loginResponse = await agent
+    .post("/users/login")
+    .send({ correo: credentials.correo, password: credentials.password });
+
+  if (loginResponse.status !== 200) {
+    throw new Error(`Error iniciando sesión: ${JSON.stringify(loginResponse.body)}`);
+  }
+
+  return agent;
+};
+
 describe("Movie Routes", () => {
 
   beforeAll(() => {
     assertTestDatabase();
+
+    if (!process.env.TOKEN_SECRET_KEY) {
+      throw new Error("TOKEN_SECRET_KEY no está definida");
+    }
   });
 
   afterEach(async () => {
@@ -235,12 +274,19 @@ describe("Movie Routes", () => {
   // POPULAR
   // --------------------------------------------------
 
-  describe("GET /movies/popular", () => {
+    describe("GET /movies/popular", () => {
+
+    it("debería rechazar la petición si no hay sesión iniciada", async () => {
+      const response = await request(server).get("/movies/popular");
+
+      expect(response.status).toBe(401);
+    });
 
     it("debería devolver las películas populares", async () => {
       const movie = await addMovie();
+      const agent = await createAuthenticatedAgent();
 
-      const response = await request(server)
+      const response = await agent
         .get("/movies/popular")
         .query({ limit: 100 });
 
@@ -254,10 +300,11 @@ describe("Movie Routes", () => {
       const popular = await addMovie();
       const lessPopular = await addMovie();
       const user = await addUser();
+      const agent = await createAuthenticatedAgent();
 
       await movieRepository.insertMovies([popular.id_obra], user.id_usuario);
 
-      const response = await request(server)
+      const response = await agent
         .get("/movies/popular")
         .query({ limit: 100 });
 
@@ -269,8 +316,9 @@ describe("Movie Routes", () => {
     it("debería respetar el límite indicado", async () => {
       await addMovie();
       await addMovie();
+      const agent = await createAuthenticatedAgent();
 
-      const response = await request(server)
+      const response = await agent
         .get("/movies/popular")
         .query({ limit: 1 });
 
@@ -281,7 +329,9 @@ describe("Movie Routes", () => {
     it.each(["0", "101", "abc"])(
       "debería rechazar un límite no válido (%s)",
       async (limit) => {
-        const response = await request(server)
+        const agent = await createAuthenticatedAgent();
+
+        const response = await agent
           .get("/movies/popular")
           .query({ limit });
 
