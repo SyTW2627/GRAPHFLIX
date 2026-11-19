@@ -101,7 +101,8 @@ export class UserRepository {
           UPDATE usuario
           SET
               correo = COALESCE(${data.correo ?? null}, correo),
-              nombre_usuario = COALESCE(${data.nombre_usuario ?? null}, nombre_usuario)
+              nombre_usuario = COALESCE(${data.nombre_usuario ?? null}, nombre_usuario),
+              password_hash = COALESCE(${data.password ?? null}, password_hash)
           WHERE id_usuario = ${id}
           RETURNING *;
       `;
