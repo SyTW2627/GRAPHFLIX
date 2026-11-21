@@ -43,7 +43,9 @@ function UserHeader() {
     <header className="navbar">
       <div className="navbar-brand">
         <img src={logo} alt="Logo de Graphflix" className="navbar-logo" />
-        <h1 className="navbar-title">Graphflix</h1>
+        <Link to="/" className="navbar-title">
+          <h1 className="navbar-title">Graphflix</h1>
+        </Link>
       </div>
 
       <div className="user-menu" ref={menuRef}>
