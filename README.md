@@ -30,11 +30,11 @@ cd ..
 ## Configuración de variables de entorno
 ### Server
 Crear un archivo .env en el /server con las siguientes variables:
-- DATABASE_URL=postgresql://<usuario>:<contraseña>@localhost:5432/graphflix
-- TOKEN_SECRET_KEY=<clave-secreta-para-firmar-tokens>
+- DATABASE_URL=postgresql://usuario:contraseña@localhost:5432/graphflix
+- TOKEN_SECRET_KEY=clave-secreta-para-generar-tokens
 
 Crear un archivo .env.test en el /server con las siguientes variables:
-- DATABASE_URL=postgresql://<usuario>:<contraseña>@localhost:5432/graphflix_test
+- DATABASE_URL=postgresql://usuario:contraseña@localhost:5432/graphflix_test
 
 ### Client
 Crear un archivo .env en el /client con las siguientes variables:
