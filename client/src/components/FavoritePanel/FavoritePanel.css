@@ -58,6 +58,7 @@
 }
 
 .favorite-card {
+  position: relative;
   display: block;
   width: 100%;
   aspect-ratio: 2 / 3;
@@ -97,6 +98,36 @@
   font-size: 0.8rem;
   font-weight: 600;
   text-align: center;
+}
+
+.favorite-card-remove {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 26px;
+  height: 26px;
+  border: none;
+  border-radius: 50%;
+  background: #6d3fd9;
+  color: #ffffff;
+  font-size: 0.8rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease, background 0.2s ease;
+}
+
+.favorite-card-remove:hover {
+  background: #ffffff;
+  color: #6d3fd9;
+  border: 2px solid #6d3fd9;
+}
+
+.favorite-card:hover .favorite-card-remove,
+.favorite-card-remove:focus-visible {
+  opacity: 1;
 }
 
 @media (max-width: 900px) {

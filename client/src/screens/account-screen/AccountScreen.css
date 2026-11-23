@@ -24,27 +24,23 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-  
-    padding: 10px 16px;
-  
-    color: #7C3AED;
-    background-color: #FFFFFF;
+    padding: 8px 14px;
     border: 1px solid #E5E5EA;
     border-radius: 10px;
-  
-    font-family: inherit;
-    font-size: 14px;
-    font-weight: 500;
-  
+    background: #FFFFFF;
+    color: #1D1D1F;
+    font-size: 15px;
+    font-weight: 600;
     cursor: pointer;
-    transition: border-color 0.2s ease, background-color 0.2s ease;
+    transition: all 0.2s ease;
   }
-  
+
   .account-back-button:hover {
-    background-color: #F3EEFF;
     border-color: #C4B5FD;
+    color: #7C3AED;
+    background: #f1ecfd;
   }
-  
+
   .account-back-button:focus-visible {
     outline: 2px solid #7C3AED;
     outline-offset: 2px;

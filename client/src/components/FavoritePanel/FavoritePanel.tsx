@@ -1,13 +1,27 @@
-import type { Favorite } from "../../services/favorite.service"; 
+
+import { type Favorite, removeFavorite } from "../../services/favorite.service"; 
 import "./FavoritePanel.css";
 
 interface FavoritePanelProps {
   isOpen: boolean;
   onToggle: () => void;
   favorites: Favorite[];
+  onRemoveFavorite: () => void;
+  onSelectMovie: (id_obra: number) => void;
+  userId: number;
 }
 
-function FavoritePanel({ isOpen, onToggle, favorites }: FavoritePanelProps) {
+function FavoritePanel({ isOpen, onToggle, userId, favorites, onRemoveFavorite, onSelectMovie }: FavoritePanelProps) {
+  const handleRemoveFavorite = async (e: React.MouseEvent, id_obra: number) => {
+    e.stopPropagation(); // Evita que el clic se propague al contenedor del favorito
+    try {
+      await removeFavorite(userId, id_obra); 
+      onRemoveFavorite();
+    }
+    catch(error) {
+      console.error("Error al eliminar de favoritos:", error);
+    }
+  }
   return (
     <aside className={`favorites ${isOpen ? "" : "favorites--closed"}`}>
       <button
@@ -31,16 +45,24 @@ function FavoritePanel({ isOpen, onToggle, favorites }: FavoritePanelProps) {
             <ul className="favorites-grid">
               {favorites.map((movie) => (
                 <li key={movie.id_obra}>
-                  <button
-                    className="favorite-card"
-                    title={movie.titulo}
+                  <div className="favorite-card" 
+                        onClick={() => onSelectMovie(movie.id_obra)}
+                        title={movie.titulo}
                   >
                     {movie.imagen_url ? (
                       <img src={movie.imagen_url} alt={`Póster de ${movie.titulo}`} />
                     ) : (
                       <span className="favorite-card-placeholder">{movie.titulo}</span>
                     )}
-                  </button>
+
+                    <button className="favorite-card-remove" 
+                        onClick={(e) => handleRemoveFavorite(e, movie.id_obra)}
+                        aria-label={`Quitar ${movie.titulo} de favoritos`}
+                        title={`Quitar ${movie.titulo} de favoritos`}
+                    >
+                      ✕
+                    </button>
+                  </div>
                 </li>
               ))}
             </ul>

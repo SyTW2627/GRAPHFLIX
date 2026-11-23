@@ -225,6 +225,22 @@ function GraphScreen() {
           isOpen={favoritesOpen}
           onToggle={() => setFavoritesOpen((v) => !v)}
           favorites={favorites}
+          userId={getStoreUSer()?.id_usuario!}
+          onRemoveFavorite={ async () => {
+            const user = getStoreUSer();
+            if (!user) return;
+            try {
+              await refreshAfterFavoriteChange(user.id_usuario);
+            }
+            catch (error) {
+              if (error instanceof SessionExpiredError) {
+                navigate("/login", { replace: true });
+                return;
+              }
+              console.error("Error al actualizar después de cambiar favoritos:", error);
+            }
+          }} 
+          onSelectMovie={handleOpenMovie}
         />
       </div>
     </div>
