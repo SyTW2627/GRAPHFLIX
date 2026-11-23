@@ -91,4 +91,14 @@ export class MapRepository {
             WHERE n.id_mapa = ${mapId};
         `;
     }
+
+    async countGenresByMapId(mapId: number): Promise<number> {
+        const [row] = await sql`
+            SELECT COUNT(DISTINCT go.id_genero)::int AS total
+            FROM nodo n
+            JOIN genero_obra go ON go.id_obra = n.id_obra
+            WHERE n.id_mapa = ${mapId};
+        `;
+        return Number(row?.total ?? 0);
+    }
 }

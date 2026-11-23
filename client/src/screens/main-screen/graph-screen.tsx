@@ -171,7 +171,7 @@ function GraphScreen() {
     movies: graph ? graph.nodes.filter((n) => n.id_obra !== null).length : 0,
     favorites: favorites.length,
     connections: graph ? graph.edges.filter((e) => e.source !== 0).length : 0,
-    genres: 0,
+    genres: graph?.total_generos ?? 0,
   };
 
   const hayPeliculas = graph !== null && graph.nodes.some((n) => n.id_obra !== null);
