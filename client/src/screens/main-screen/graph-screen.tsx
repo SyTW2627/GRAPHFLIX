@@ -5,7 +5,7 @@ import SideBar, { type Filters, type Summary } from "../../components/SideBar/Si
 import FavoritePanel from "../../components/FavoritePanel/FavoritePanel";
 import Graph from "../../components/Graph/graph";
 import { getStoreUSer } from "../../services/auth.service";
-import { getMapGraph, getRecommendationGraph, getUserMaps, SessionExpiredError, type GraphResponse, type UserMap } from "../../services/graph.service";
+import { getMapGraph, getUserMaps, SessionExpiredError, type GraphResponse } from "../../services/graph.service";
 import { addFavorite, getFavorites, removeFavorite, type Favorite } from "../../services/favorite.service";
 import { searchMovies, type MovieResult } from "../../services/movie.service";
 import "./graph-screen.css";
@@ -21,8 +21,6 @@ function GraphScreen() {
   const [search, setSearch] = useState("");
   const [filters, setFilters] = useState<Filters>(INITIAL_FILTERS);
 
-  const [maps, setMaps] = useState<UserMap[]>([]);
-  const [activeMap, setActiveMap] = useState<UserMap | null>(null);
   const [graph, setGraph] = useState<GraphResponse | null>(null);
   const [favorites, setFavorites] = useState<Favorite[]>([]);
   const [loading, setLoading] = useState(true);
@@ -48,25 +46,14 @@ function GraphScreen() {
         const userMaps = await getUserMaps();
         if (cancelled) return;
 
-        setMaps(userMaps);
+        // cada usuario tiene un solo mapa
+        const userMap = userMaps[0] ?? null;
 
-        if (userMaps.length > 0) {  // si el ususario tieien mapas
-          const firstMap = userMaps[0];
-          setActiveMap(firstMap);
-          const graphData = await getMapGraph(firstMap.id_mapa);
+        if (userMap) {
+          const graphData = await getMapGraph(userMap.id_mapa);
           if (!cancelled) setGraph(graphData);
-        } else { // si no tiene mapas
-          setActiveMap(null);
+        } else {
           setGraph(EMPTY_GRAPH);
-          // const graphData = await getRecommendationGraph(user!.id_usuario);
-          // if (cancelled) return;
-          // setGraph(graphData);
-
-          // const updatedMaps = await getUserMaps();
-          // if (!cancelled && updatedMaps.length > 0) {
-          //   setMaps(updatedMaps);
-          //   setActiveMap(updatedMaps[0]);
-          // }
         }
 
         const favs = await getFavorites(user!.id_usuario);
@@ -135,27 +122,20 @@ function GraphScreen() {
     };
   }, [search, filters, searchActive]);
 
-  // recargar favoritos, mapas y grafo.
+  // recargar favoritos y el mapa del usuario
   const refreshAfterFavoriteChange = async (idUsuario: number) => {
     setFavorites(await getFavorites(idUsuario));
 
-    let userMaps = await getUserMaps();
-    let graphData: GraphResponse;
+    const userMaps = await getUserMaps();
+    const userMap = userMaps[0] ?? null;
 
-    if (userMaps.length === 0) {
-      // sin favoritas
-      setMaps([]);
-      setActiveMap(null);
+    if (!userMap) {
+      // sin favoritas, el backend borra el mapa
       setGraph(EMPTY_GRAPH);
       return;
-    } 
-    const target = userMaps.find((m) => m.nombre_mapa === activeMap?.nombre_mapa) ?? userMaps[0];
-    graphData = await getMapGraph(target.id_mapa);
+    }
 
-    const current = userMaps.find((m) => m.nombre_mapa === activeMap?.nombre_mapa) ?? userMaps[0] ?? null;
-    setMaps(userMaps);
-    setActiveMap(current);
-    setGraph(graphData);
+    setGraph(await getMapGraph(userMap.id_mapa));
   };
 
   const handleToggleFavorite = async (movie: MovieResult) => {
@@ -185,53 +165,16 @@ function GraphScreen() {
     }
   };
 
-  const handleSelectMap = async (mapName: string) => {
-    const selected = maps.find((m) => (m.nombre_mapa || `Mapa ${m.id_mapa}`) === mapName);
-    if (!selected || selected.id_mapa === activeMap?.id_mapa) return;
-
-    setActiveMap(selected);
-    setLoading(true);
-    setError("");
-
-    try {
-      const graphData = await getMapGraph(selected.id_mapa);
-      setGraph(graphData);
-    } catch (err) {
-      if (err instanceof SessionExpiredError) {
-        navigate("/login", { replace: true });
-        return;
-      }
-      setError(err instanceof Error ? err.message : "Error al cargar el mapa");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleAddMap = () => {
-    const user = getStoreUSer();
-    if (!user) return;
-    const tempMap: UserMap = {
-      id_mapa: Date.now(),
-      nombre_mapa: `Mapa ${maps.length + 1}`,
-      tipo_mapa: "peliculas",
-      id_usuario: user.id_usuario,
-    };
-    setMaps((prev) => [...prev, tempMap]);
-    setActiveMap(tempMap);
-  };
-
   const handleOpenMovie = (idObra: number) => navigate(`/pelicula/${idObra}`);
 
   const summary: Summary = {
     movies: graph ? graph.nodes.filter((n) => n.id_obra !== null).length : 0,
     favorites: favorites.length,
     connections: graph ? graph.edges.filter((e) => e.source !== 0).length : 0,
-    genres: 0,
+    genres: graph?.total_generos ?? 0,
   };
 
   const hayPeliculas = graph !== null && graph.nodes.some((n) => n.id_obra !== null);
-  const mapNames = maps.map((m) => m.nombre_mapa || `Mapa ${m.id_mapa}`);
-  const activeMapName = activeMap ? activeMap.nombre_mapa || `Mapa ${activeMap.id_mapa}` : "";
 
   return (
     <div className="graph-screen">
@@ -246,10 +189,6 @@ function GraphScreen() {
           filters={filters}
           onFiltersChange={setFilters}
           summary={summary}
-          maps={mapNames}
-          activeMap={activeMapName}
-          onSelectMap={handleSelectMap}
-          onAddMap={handleAddMap}
           searchActive={searchActive}
           searching={searching}
           searchResults={searchResults}

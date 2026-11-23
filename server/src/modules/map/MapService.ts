@@ -54,6 +54,7 @@ export class MapService {
         // obtener nodos y aristas
         const nodosBD = await this.mapRepository.getNodesWithInfoByMapId(mapId, userId);
         const aristasBD = await this.mapRepository.getEdgesByMapId(mapId);
+        const totalGeneros = await this.mapRepository.countGenresByMapId(mapId);
 
         const nodosPeliculas = nodosBD.map((n) => {
             const posX = Number(n.pos_x);
@@ -112,6 +113,7 @@ export class MapService {
         return {
             isColdStart: nodosFavoritos.length === 0,
             id_mapa: mapId,
+            total_generos: totalGeneros,
             nodes: [nodoCentral, ...nodosPeliculas],
             edges: [...aristasCentrales, ...aristasSimilitud],
         };

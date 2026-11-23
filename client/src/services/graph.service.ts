@@ -18,10 +18,11 @@ export interface GraphEdge {
 }
 
 export interface GraphResponse {
-    isColdStart: boolean;
-    id_mapa?: number;
-    nodes: GraphNode[];
-    edges: GraphEdge[];
+  isColdStart: boolean;
+  id_mapa?: number;
+  total_generos?: number;
+  nodes: GraphNode[];
+  edges: GraphEdge[];
 }
 
 export interface UserMap {
