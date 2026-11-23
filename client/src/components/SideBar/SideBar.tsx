@@ -25,10 +25,6 @@ interface SideBarProps {
   filters: Filters;
   onFiltersChange: (filters: Filters) => void;
   summary: Summary;
-  maps: string[];
-  activeMap: string;
-  onSelectMap: (name: string) => void;
-  onAddMap: () => void;
   // buscador
   searchActive: boolean;
   searching: boolean;
@@ -51,10 +47,6 @@ function SideBar({
   filters,
   onFiltersChange,
   summary,
-  maps,
-  activeMap,
-  onSelectMap,
-  onAddMap,
   searchActive,
   searching,
   searchResults,
@@ -200,7 +192,7 @@ function SideBar({
                   onChange={(e) => updateFilter("director", e.target.value)}
                 >
                   <option value="">Todos</option>
-                  {/* FLATA cargar directores */}
+                  {/* FALTA cargar directores */}
                 </select>
 
                 <label className="sidebar-label" htmlFor="filter-actores">
@@ -260,28 +252,6 @@ function SideBar({
                 <span>Géneros</span>
               </div>
             </div>
-          </section>
-
-          {/* Mapas */}
-          <section className="sidebar-card">
-            <div className="sidebar-card-header sidebar-card-header--static">
-              <h3 className="sidebar-card-title">Mapas</h3>
-              <button className="add-map-btn" onClick={onAddMap} aria-label="Crear mapa nuevo">
-                +
-              </button>
-            </div>
-            <ul className="maps-list">
-              {maps.map((name) => (
-                <li key={name}>
-                  <button
-                    className={`maps-item ${name === activeMap ? "maps-item--active" : ""}`}
-                    onClick={() => onSelectMap(name)}
-                  >
-                    {name}
-                  </button>
-                </li>
-              ))}
-            </ul>
           </section>
         </div>
       )}
