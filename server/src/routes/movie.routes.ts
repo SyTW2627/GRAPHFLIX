@@ -73,17 +73,6 @@ movies.get("/movies/search", async (c) => {
     return c.json(resultados, 200);
 });
 
-movies.get("/movies/popular", authMiddleware, async (c) => {
-    const limit = Number(c.req.query("limit") ?? 12);
-
-    if (!Number.isInteger(limit) || limit <= 0 || limit > 100) {
-        throw new ValidationError("limit debe ser un entero entre 1 y 100");
-    }
-
-    const popularMovies = await movieService.findPopularMovies(limit);
-
-    return c.json(popularMovies, 200);
-});
 
 movies.get("/movies/popular", async (c) => {
     const limit = Number(c.req.query("limit") ?? 12);
