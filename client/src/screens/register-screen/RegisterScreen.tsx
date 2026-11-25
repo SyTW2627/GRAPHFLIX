@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import "./RegisterScreen.css";
 import logo from "../../assets/logo-graphflix.png";
@@ -150,6 +151,9 @@ function RegisterScreen() {
           </button>
 
         </form>
+        <p>
+          ¿Ya tienes una cuenta? <Link to="/login">Iniciar sesión</Link>
+        </p>
       </div>
 
       <Footer />

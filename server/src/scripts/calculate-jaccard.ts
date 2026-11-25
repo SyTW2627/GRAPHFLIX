@@ -5,6 +5,12 @@ import { movies } from '../routes/movie.routes';
 
 const connectionString = process.env.DATABASE_URL;
 
+interface SimilitudObra {
+    obra_origen_id: number;
+    obra_destino_id: number;
+    puntuacion: number;
+}
+
 const movieRepository = new MovieRepository();
 const movieService = new MovieService(movieRepository);
 
@@ -36,7 +42,7 @@ async function calculateJaccard() {
         for (const fila of [...generos, ...personas, ...sagas]) caracteristicas.get(fila.id_obra)?.add(fila.feature);
 
         //Comparar obra por obra
-        const resultados = [];
+        const resultados: SimilitudObra[] = [];
 
         for (let i = 0; i < obras.length; i++) {
             const id1 = obras[i]!.id_obra;

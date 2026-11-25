@@ -8,6 +8,7 @@
     "start": "bun src/index.ts",
     "typecheck": "bun check",
     "ingest": "bun run scripts/seed.ts",
+    "ingest-test": "bun --env-file=.env.test run scripts/seed.ts",
     "db:jaccard": "bun run src/scripts/calculate-jaccard.ts",
     "db-init-dev": "docker exec -i graphflix_postgres psql -U usuario -d graphflix < src/db/schema.sql",
     "db-init-test": "docker exec -i graphflix_postgres psql -U usuario -d graphflix_test < src/db/schema.sql",
