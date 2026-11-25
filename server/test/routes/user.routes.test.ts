@@ -182,7 +182,7 @@ describe("User Routes", () => {
       // Comprueba que se haya enviado la cookie JWT.
       expect(response.headers["set-cookie"]).toBeDefined();
 
-      const cookies = response.headers["set-cookie"]!.join(";");
+      const cookies = response.headers["set-cookie"]!;
 
       expect(cookies).toContain("access_token=");
       expect(cookies.toLowerCase()).toContain("httponly");
