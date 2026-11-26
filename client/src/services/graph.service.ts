@@ -7,6 +7,9 @@ export interface GraphNode {
     titulo?: string;
     ano_publicacion?: number | null;
     imagen_url?: string | null;
+    generos?: string[];
+    directores?: string[];
+    reparto?: string[];
     nivel: number;
     pos_x: number;
     pos_y: number;

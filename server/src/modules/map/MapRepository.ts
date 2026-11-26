@@ -74,7 +74,25 @@ export class MapRepository {
                 o.ano_publicacion,
                 o.descripcion,
                 o.imagen_url,
-                (f.id_obra IS NOT NULL) AS es_favorita
+                (f.id_obra IS NOT NULL) AS es_favorita,
+                COALESCE((
+                    SELECT array_agg(DISTINCT g.nombre ORDER BY g.nombre)
+                    FROM genero_obra go
+                    JOIN genero g ON g.id_genero = go.id_genero
+                    WHERE go.id_obra = n.id_obra
+                ), '{}'::text[]) AS generos,
+                COALESCE((
+                    SELECT array_agg(DISTINCT p.nombre ORDER BY p.nombre)
+                    FROM persona_obra po
+                    JOIN persona p ON p.id_persona = po.id_persona
+                    WHERE po.id_obra = n.id_obra AND po.tipo = 'director'
+                ), '{}'::text[]) AS directores,
+                COALESCE((
+                    SELECT array_agg(DISTINCT p.nombre ORDER BY p.nombre)
+                    FROM persona_obra po
+                    JOIN persona p ON p.id_persona = po.id_persona
+                    WHERE po.id_obra = n.id_obra AND po.tipo = 'actor'
+                ), '{}'::text[]) AS reparto
             FROM nodo n
             JOIN obra o ON n.id_obra = o.id_obra
             LEFT JOIN favorita f ON f.id_obra = n.id_obra AND f.id_usuario = ${userId}
