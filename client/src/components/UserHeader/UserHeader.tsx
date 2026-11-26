@@ -4,6 +4,7 @@ import "../Header/Header.css";
 import "./UserHeader.css";
 import logo from "../../assets/logo-graphflix.png";
 import { logout } from "../../services/auth.service"; 
+import { clearSavedFilters } from "../../utils/filterGraph";
 
 function UserHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -35,6 +36,7 @@ function UserHeader() {
     } catch (err) {
       console.error("No se pudo cerrar la sesión en el servidor:", err);
     } finally {
+      clearSavedFilters();
       navigate("/", { replace: true });
     }
   };

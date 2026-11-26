@@ -8,7 +8,7 @@ import { getStoreUSer } from "../../services/auth.service";
 import { getMapGraph, getUserMaps, SessionExpiredError, type GraphResponse } from "../../services/graph.service";
 import { addFavorite, getFavorites, removeFavorite, type Favorite } from "../../services/favorite.service";
 import { searchMovies, type MovieResult } from "../../services/movie.service";
-import { filterGraph, getFilterOptions, INITIAL_FILTERS, type GraphFilters } from "../../utils/filterGraph";
+import { filterGraph, loadFilters, saveFilters, getFilterOptions, INITIAL_FILTERS, type GraphFilters } from "../../utils/filterGraph";
 import "./graph-screen.css";
 
 const EMPTY_GRAPH: GraphResponse = { isColdStart: true, nodes: [], edges: [] };
@@ -19,7 +19,7 @@ function GraphScreen() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [favoritesOpen, setFavoritesOpen] = useState(false);
   const [search, setSearch] = useState("");
-  const [filters, setFilters] = useState<GraphFilters>(INITIAL_FILTERS);
+  const [filters, setFilters] = useState<GraphFilters>(loadFilters);
 
   const [graph, setGraph] = useState<GraphResponse | null>(null);
   const [favorites, setFavorites] = useState<Favorite[]>([]);
@@ -76,6 +76,10 @@ function GraphScreen() {
       cancelled = true;
     };
   }, [navigate]);
+
+  useEffect(() => {
+    saveFilters(filters);
+  }, [filters]);
 
  // los filtros afectan al grafo
   const searchActive = search.trim().length >= 2;

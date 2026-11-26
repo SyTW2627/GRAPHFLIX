@@ -22,11 +22,38 @@ export const INITIAL_FILTERS: GraphFilters = {
   to: "",
 };
 
+const FILTERS_KEY = "graph-filters";
+
+export function loadFilters(): GraphFilters {
+  try {
+    const raw = sessionStorage.getItem(FILTERS_KEY);
+    if (!raw) return INITIAL_FILTERS;
+    const p = JSON.parse(raw);
+    return {
+      genres: Array.isArray(p.genres) ? p.genres : [],
+      directors: Array.isArray(p.directors) ? p.directors : [],
+      actors: Array.isArray(p.actors) ? p.actors : [],
+      from: typeof p.from === "string" ? p.from : "",
+      to: typeof p.to === "string" ? p.to : "",
+    };
+  } catch {
+    return INITIAL_FILTERS;
+  }
+}
+
+export function saveFilters(f: GraphFilters) {
+  sessionStorage.setItem(FILTERS_KEY, JSON.stringify(f));
+}
+
+export function clearSavedFilters() {
+  sessionStorage.removeItem(FILTERS_KEY);
+}
+
 export function hasActiveFilters(f: GraphFilters): boolean {
   return f.genres.length > 0 || f.directors.length > 0 || f.actors.length > 0 || !!f.from || !!f.to;
 }
 
-// opciones disponibles (lo que realmente aparece en el grafo cargado)
+// opciones 
 export function getFilterOptions(nodes: GraphNode[]): FilterOptions {
   const genres = new Set<string>();
   const directors = new Set<string>();
