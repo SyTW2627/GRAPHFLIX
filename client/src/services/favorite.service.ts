@@ -43,8 +43,8 @@ export async function addManyFavorites(idsObras: number[]) {
 
     const idsUnicos = [...new Set(idsObras)];
     
-    if (idsUnicos.length !== 3) {
-        throw new Error("Debes seleccionar exactamente 3 películas");
+    if (idsUnicos.length < MIN_ONBOARDING_MOVIES) {
+        throw new Error(`Debes seleccionar al menos ${MIN_ONBOARDING_MOVIES} películas`);
     }
     
     const response = await fetch(`${API_URL}/favorites/batch`, {
