@@ -80,11 +80,22 @@ function GraphScreen() {
  // los filtros afectan al grafo
   const searchActive = search.trim().length >= 2;
 
-   const filterOptions = useMemo(() => getFilterOptions(graph?.nodes ?? []), [graph]);
+  const filterOptions = useMemo(() => getFilterOptions(graph?.nodes ?? []), [graph]);
+  
   const visibleGraph = useMemo(
     () => (graph ? filterGraph(graph, filters) : null),
     [graph, filters]
   );
+
+  const visibleGenres = useMemo(() => {
+    if (!visibleGraph) return 0;
+    const set = new Set<string>();
+    for (const node of visibleGraph.nodes) {
+      if (node.id_obra === null) continue; // ignora nodos que no son películas
+      node.generos?.forEach((g) => set.add(g));
+    }
+    return set.size;
+  }, [visibleGraph]);
 
   // cancela la petición anterior si el usuario sigue escribiendo
   useEffect(() => {
@@ -169,7 +180,7 @@ function GraphScreen() {
     movies: visibleGraph ? visibleGraph.nodes.filter((n) => n.id_obra !== null).length : 0,
     favorites: favorites.length,
     connections: visibleGraph ? visibleGraph.edges.filter((e) => e.source !== 0).length : 0,
-    genres: graph?.total_generos ?? 0,
+    genres: visibleGenres,
   };
 
   const hayPeliculas = graph !== null && graph.nodes.some((n) => n.id_obra !== null);
