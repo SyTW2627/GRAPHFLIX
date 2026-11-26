@@ -18,7 +18,7 @@ app.get("/", (c) => c.text("Graphflix API funcionando"));
 app.use(
   "*",
   cors({
-    origin: "http://localhost:5173",
+    origin: Bun.env.CORS_ORIGIN,
     credentials: true,
     allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowHeaders: ["Content-Type", "Authorization"]
@@ -34,6 +34,6 @@ app.route("/", favorite);
 app.route("/", recommendations);
 
 export default {
-  port: 3000,
+  port: Bun.env.PORT,
   fetch: app.fetch,
 };

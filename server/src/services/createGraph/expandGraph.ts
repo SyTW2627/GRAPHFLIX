@@ -8,17 +8,18 @@ const PROFUNDIDAD_MAXIMA = 3;
 const MAX_VECINOS_POR_NODO = 4;
 
 export async function expandirGrafo(peliculasSemilla: Pelicula[]) {
-    
     const idsSemilla = [...new Set(peliculasSemilla.map(p => Number(p.id_obra)))];
     const visitados = new Set<number>(idsSemilla);
     const relacionesVisitadas = new Set<string>();
     const idsPorNivel = new Map<number, number[]>([[0, idsSemilla]]);
     const relacionesTotales: Relacion[] = [];
 
+    // NUEVO: nivel en el que se descubrió cada película
+    const nivelPorId = new Map<number, number>(idsSemilla.map(id => [id, 0]));
+
     let fronteraActual = idsSemilla;
 
     for (let nivel = 1; nivel <= PROFUNDIDAD_MAXIMA && fronteraActual.length > 0; nivel++) {
-        
         const fronteraSet = new Set(fronteraActual);
         const conteoPorObra = new Map<number, number>();
         const nuevosIdsNivel: number[] = [];
@@ -33,6 +34,13 @@ export async function expandirGrafo(peliculasSemilla: Pelicula[]) {
             // Se cogen el origen y destino de las relaciones
             const origen = Number(r.obra_origen_id);
             const destino = Number(r.obra_destino_id);
+
+            // NUEVO: descartar aristas que saltan niveles (solo se permiten
+            // aristas entre niveles consecutivos o dentro del mismo nivel)
+            const nOrigen = nivelPorId.get(origen);
+            const nDestino = nivelPorId.get(destino);
+            if ((nOrigen !== undefined && nOrigen < nivel - 1) ||
+                (nDestino !== undefined && nDestino < nivel - 1)) continue;
 
             // Se suman la cantidad de vecinos por obra 
             const cOrigen = conteoPorObra.get(origen) ?? 0;
@@ -50,7 +58,6 @@ export async function expandirGrafo(peliculasSemilla: Pelicula[]) {
 
             // Toma siempre la relacion de origen: menor, destino: mayor
             const clave = origen < destino ? `${origen}-${destino}` : `${destino}-${origen}`;
-            
             // Se añade la relacion a relacionesVisitadas
             if (!relacionesVisitadas.has(clave)) {
                 relacionesVisitadas.add(clave);
@@ -61,10 +68,12 @@ export async function expandirGrafo(peliculasSemilla: Pelicula[]) {
             if (!visitados.has(origen)) {
                 visitados.add(origen);
                 nuevosIdsNivel.push(origen);
+                nivelPorId.set(origen, nivel); // NUEVO
             }
             if (!visitados.has(destino)) {
                 visitados.add(destino);
                 nuevosIdsNivel.push(destino);
+                nivelPorId.set(destino, nivel); // NUEVO
             }
         }
 

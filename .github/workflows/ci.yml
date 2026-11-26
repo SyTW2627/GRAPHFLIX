@@ -1,0 +1,113 @@
+name: Graphflix CI
+
+on:
+  push:
+    branches:
+      - "**"
+
+  pull_request:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+
+  # ==========================================
+  # FRONTEND
+  # ==========================================
+
+  frontend:
+    name: Frontend - Build
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: client
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Build frontend
+        run: bun run build
+
+
+  # ==========================================
+  # BACKEND
+  # ==========================================
+
+  backend:
+    name: Backend - Typecheck & Tests
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: server
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+
+        env:
+          POSTGRES_USER: usuario
+          POSTGRES_PASSWORD: graphflix_ci
+          POSTGRES_DB: graphflix_test
+
+        ports:
+          - 5432:5432
+
+        options: >-
+          --health-cmd "pg_isready -U usuario -d graphflix_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgres://usuario:graphflix_ci@localhost:5432/graphflix_test
+      TOKEN_SECRET_KEY: ci-test-secret-key
+      CORS_ORIGIN: http://localhost:5173
+      NODE_ENV: test
+      PGPASSWORD: graphflix_ci
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Prepare test environment
+        run: |
+          cat > .env.test << EOF
+          DATABASE_URL=$DATABASE_URL
+          TOKEN_SECRET_KEY=$TOKEN_SECRET_KEY
+          CORS_ORIGIN=$CORS_ORIGIN
+          NODE_ENV=$NODE_ENV
+          EOF
+
+      - name: Initialize test database
+        run: |
+          psql -h localhost \
+            -U usuario \
+            -d graphflix_test \
+            -v ON_ERROR_STOP=1 \
+            -f src/db/schema.sql
+
+      - name: Typecheck
+        run: bun run typecheck
+
+      - name: Run tests
+        run: bun run test

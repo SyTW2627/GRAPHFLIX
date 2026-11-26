@@ -17,6 +17,12 @@
   color: #1D1D1F;
 }
 
+.register-container p {
+  margin-top: 28px;
+  color: #77717F;
+  font-size: 15px;
+}
+
 .register-form {
   display: flex;
   flex-direction: column;

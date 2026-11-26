@@ -17,7 +17,7 @@ export async function construirGrafo( peliculasSemilla: Pelicula[], idUsuario: n
     const { idsSemilla, idsPorNivel, relacionesTotales, peliculasRecomendadas } = await expandirGrafo(peliculasSemilla);
 
     // 2. Calcular posiciones
-    const peliculasConPosicion = calcularPosiciones( peliculasSemilla, peliculasRecomendadas, idsPorNivel);
+    const peliculasConPosicion = calcularPosiciones( peliculasSemilla, peliculasRecomendadas, idsPorNivel, relacionesTotales);
 
     // 3. Guardar en PostgreSQL
     const { mapaCreado, nodosGuardados, aristasGuardadas } = await guardarGrafo( 
