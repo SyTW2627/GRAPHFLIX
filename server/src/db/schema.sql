@@ -127,3 +127,6 @@ ON saga_obra (id_obra);
 
 CREATE INDEX IF NOT EXISTS idx_nodo_id_mapa
 ON nodo (id_mapa);
+
+CREATE INDEX idx_similitud_destino
+ON similitud_obra (obra_destino_id);

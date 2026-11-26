@@ -1,7 +1,10 @@
 {
   "name": "graphflix",
   "private": true,
-  "workspaces": ["client", "server"],
+  "workspaces": [
+    "client",
+    "server"
+  ],
   "module": "index.ts",
   "type": "module",
   "scripts": {
@@ -14,8 +17,5 @@
   },
   "peerDependencies": {
     "typescript": "^7"
-  },
-  "dependencies": {
-    "graphflix": "."
   }
 }

@@ -65,6 +65,13 @@ type Punto = { x: number; y: number };
 // de cruces se prefieren las aristas más cortas.
 type Costo = { cruces: number; longitud: number };
 
+function exigirDefinido<T>(valor: T | undefined, mensaje: string): T {
+    if (valor === undefined) {
+        throw new Error(mensaje);
+    }
+
+    return valor;
+}
 
 /* ----------------------------- Utilidades --------------------------------- */
 
@@ -106,6 +113,10 @@ export function calcularPosiciones(
     // Niveles ordenados de menor a mayor (0, 1, 2, 3...)
     const niveles = [...idsPorNivel.keys()].sort((a, b) => a - b);
     const primerNivel = niveles[0];
+
+    if (primerNivel === undefined) {
+        return [];
+    }
 
 
     /* ---------------------- Estructuras básicas ---------------------------- */
@@ -179,16 +190,19 @@ export function calcularPosiciones(
     const candidatas: number[][] = aristas.map(() => []);
     for (let i = 0; i < aristas.length; i++) {
         for (let j = i + 1; j < aristas.length; j++) {
-            const [a1, b1] = aristas[i];
-            const [a2, b2] = aristas[j];
-
+            const [a1, b1] = exigirDefinido(aristas[i], "Arista no encontrada");
+            const [a2, b2] = exigirDefinido(aristas[j], "Arista no encontrada");
+    
             // Las que comparten nodo nunca cuentan como cruce
             if (a1 === a2 || a1 === b2 || b1 === a2 || b1 === b2) continue;
-
+    
             // Los rangos de niveles deben solaparse
-            if (rangos[i].lo <= rangos[j].hi && rangos[j].lo <= rangos[i].hi) {
-                candidatas[i].push(j);
-                candidatas[j].push(i);
+            const rangoI = exigirDefinido(rangos[i], "Rango de arista no encontrado");
+            const rangoJ = exigirDefinido(rangos[j], "Rango de arista no encontrado");
+    
+            if (rangoI.lo <= rangoJ.hi && rangoJ.lo <= rangoI.hi) {
+                exigirDefinido(candidatas[i], "Lista de candidatas no encontrada").push(j);
+                exigirDefinido(candidatas[j], "Lista de candidatas no encontrada").push(i);
             }
         }
     }
@@ -331,13 +345,19 @@ export function calcularPosiciones(
         let cruces = 0;
         let longitud = 0;
         for (const i of indices) {
-            const [a, b] = aristas[i];
-            const pa = pos.get(a)!, pb = pos.get(b)!;
+            const arista = exigirDefinido(aristas[i], "Arista no encontrada");
+            const [a, b] = arista;
+        
+            const pa = pos.get(a)!;
+            const pb = pos.get(b)!;
+        
             longitud += Math.hypot(pa.x - pb.x, pa.y - pb.y);
-
+        
             // Solo se compara con las aristas que podrían cruzarse con ella
-            for (const j of candidatas[i]) {
-                if (seCruzan(aristas[i], aristas[j])) cruces++;
+            for (const j of exigirDefinido(candidatas[i], "Lista de candidatas no encontrada")) {
+                const otraArista = exigirDefinido(aristas[j], "Arista candidata no encontrada");
+        
+                if (seCruzan(arista, otraArista)) cruces++;
             }
         }
         return { cruces, longitud };
@@ -368,15 +388,29 @@ export function calcularPosiciones(
             const saltoShift = Math.max(1, Math.ceil(n / MAX_ROTACIONES));
 
             for (let k = saltoShift; k < n; k += saltoShift) {
-                for (let i = 0; i < n; i++) ids[i] = base[(i + k) % n];
+                for (let i = 0; i < n; i++) {
+                    ids[i] = exigirDefinido(
+                        base[(i + k) % n],
+                        "Película no encontrada durante la rotación"
+                    );
+                }
+            
                 colocarAnillo(nivel);
-
+            
                 const c = costo(base);
-                if (esMejor(c, mejorCosto)) { mejorCosto = c; mejorShift = k; }
+                if (esMejor(c, mejorCosto)) {
+                    mejorCosto = c;
+                    mejorShift = k;
+                }
             }
-
+            
             // Aplicar la mejor rotación encontrada
-            for (let i = 0; i < n; i++) ids[i] = base[(i + mejorShift) % n];
+            for (let i = 0; i < n; i++) {
+                ids[i] = exigirDefinido(
+                    base[(i + mejorShift) % n],
+                    "Película no encontrada al aplicar la rotación"
+                );
+            }
             colocarAnillo(nivel);
             if (mejorShift !== 0) huboMejora = true;
 
@@ -387,17 +421,26 @@ export function calcularPosiciones(
                 if (sinTiempo()) break refinado;
 
                 const j = (i + 1) % n;
-                const afectados = [ids[i], ids[j]];
+
+                const idI = exigirDefinido(ids[i], "Película no encontrada en el intercambio");
+                const idJ = exigirDefinido(ids[j], "Película no encontrada en el intercambio");
+                
+                const afectados = [idI, idJ];
                 const antes = costo(afectados);
-
-                [ids[i], ids[j]] = [ids[j], ids[i]];
+                
+                // Intercambiar
+                ids[i] = idJ;
+                ids[j] = idI;
+                
                 colocarAnillo(nivel);
-
+                
                 if (esMejor(costo(afectados), antes)) {
                     huboMejora = true;
                 } else {
                     // No mejora: se deshace el intercambio
-                    [ids[i], ids[j]] = [ids[j], ids[i]];
+                    ids[i] = idI;
+                    ids[j] = idJ;
+                
                     colocarAnillo(nivel);
                 }
             }
