@@ -4,6 +4,9 @@
   "workspaces": {
     "": {
       "name": "graphflix",
+      "dependencies": {
+        "graphflix": ".",
+      },
       "devDependencies": {
         "@playwright/test": "^1.65.1",
         "@types/bun": "latest",

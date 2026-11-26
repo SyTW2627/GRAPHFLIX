@@ -74,9 +74,10 @@ jobs:
 
     env:
       DATABASE_URL: postgres://usuario:graphflix_ci@localhost:5432/graphflix_test
-      TOKEN_SECRET_KEY: ci-test-secret-key
+      TOKEN_SECRET_KEY: ci-test-secret-key-graphflix-2026-long-enough
       CORS_ORIGIN: http://localhost:5173
       NODE_ENV: test
+      PORT: 3000
       PGPASSWORD: graphflix_ci
 
     steps:
@@ -96,7 +97,15 @@ jobs:
           TOKEN_SECRET_KEY=$TOKEN_SECRET_KEY
           CORS_ORIGIN=$CORS_ORIGIN
           NODE_ENV=$NODE_ENV
+          PORT=$PORT
           EOF
+
+      - name: Verify test database
+        run: |
+          psql -h localhost \
+            -U usuario \
+            -d graphflix_test \
+            -c "SELECT current_database();"
 
       - name: Initialize test database
         run: |
