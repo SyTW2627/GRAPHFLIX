@@ -1,16 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import UserHeader from "../../components/UserHeader/UserHeader";
-import SideBar, { type Filters, type Summary } from "../../components/SideBar/SideBar";
+import SideBar, { type Summary } from "../../components/SideBar/SideBar";
 import FavoritePanel from "../../components/FavoritePanel/FavoritePanel";
 import Graph from "../../components/Graph/graph";
 import { getStoreUSer } from "../../services/auth.service";
 import { getMapGraph, getUserMaps, SessionExpiredError, type GraphResponse } from "../../services/graph.service";
 import { addFavorite, getFavorites, removeFavorite, type Favorite } from "../../services/favorite.service";
 import { searchMovies, type MovieResult } from "../../services/movie.service";
+import { filterGraph, loadFilters, saveFilters, getFilterOptions, type GraphFilters } from "../../utils/filterGraph";
 import "./graph-screen.css";
 
-const INITIAL_FILTERS: Filters = { genre: "Todos", director: "", actores: "", from: "", to: "" };
 const EMPTY_GRAPH: GraphResponse = { isColdStart: true, nodes: [], edges: [] };
 
 function GraphScreen() {
@@ -19,7 +19,7 @@ function GraphScreen() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [favoritesOpen, setFavoritesOpen] = useState(false);
   const [search, setSearch] = useState("");
-  const [filters, setFilters] = useState<Filters>(INITIAL_FILTERS);
+  const [filters, setFilters] = useState<GraphFilters>(loadFilters);
 
   const [graph, setGraph] = useState<GraphResponse | null>(null);
   const [favorites, setFavorites] = useState<Favorite[]>([]);
@@ -77,9 +77,29 @@ function GraphScreen() {
     };
   }, [navigate]);
 
-  const filtersActive =
-    filters.genre !== "Todos" || !!filters.director || !!filters.actores || !!filters.from || !!filters.to;
-  const searchActive = search.trim().length >= 2 || filtersActive;
+  useEffect(() => {
+    saveFilters(filters);
+  }, [filters]);
+
+ // los filtros afectan al grafo
+  const searchActive = search.trim().length >= 2;
+
+  const filterOptions = useMemo(() => getFilterOptions(graph?.nodes ?? []), [graph]);
+  
+  const visibleGraph = useMemo(
+    () => (graph ? filterGraph(graph, filters) : null),
+    [graph, filters]
+  );
+
+  const visibleGenres = useMemo(() => {
+    if (!visibleGraph) return 0;
+    const set = new Set<string>();
+    for (const node of visibleGraph.nodes) {
+      if (node.id_obra === null) continue; // ignora nodos que no son películas
+      node.generos?.forEach((g) => set.add(g));
+    }
+    return set.size;
+  }, [visibleGraph]);
 
   // cancela la petición anterior si el usuario sigue escribiendo
   useEffect(() => {
@@ -95,14 +115,7 @@ function GraphScreen() {
     const timer = setTimeout(async () => {
       try {
         const results = await searchMovies(
-          {
-            q: search,
-            genre: filters.genre === "Todos" ? "" : filters.genre,
-            director: filters.director,
-            actor: filters.actores,
-            from: filters.from,
-            to: filters.to,
-          },
+          { q: search },
           controller.signal
         );
         setSearchResults(results);
@@ -120,7 +133,7 @@ function GraphScreen() {
       clearTimeout(timer);
       controller.abort();
     };
-  }, [search, filters, searchActive]);
+  }, [search, searchActive]);
 
   // recargar favoritos y el mapa del usuario
   const refreshAfterFavoriteChange = async (idUsuario: number) => {
@@ -168,10 +181,10 @@ function GraphScreen() {
   const handleOpenMovie = (idObra: number) => navigate(`/pelicula/${idObra}`);
 
   const summary: Summary = {
-    movies: graph ? graph.nodes.filter((n) => n.id_obra !== null).length : 0,
+    movies: visibleGraph ? visibleGraph.nodes.filter((n) => n.id_obra !== null).length : 0,
     favorites: favorites.length,
-    connections: graph ? graph.edges.filter((e) => e.source !== 0).length : 0,
-    genres: graph?.total_generos ?? 0,
+    connections: visibleGraph ? visibleGraph.edges.filter((e) => e.source !== 0).length : 0,
+    genres: visibleGenres,
   };
 
   const hayPeliculas = graph !== null && graph.nodes.some((n) => n.id_obra !== null);
@@ -188,6 +201,7 @@ function GraphScreen() {
           onSearchChange={setSearch}
           filters={filters}
           onFiltersChange={setFilters}
+          filterOptions={filterOptions}
           summary={summary}
           searchActive={searchActive}
           searching={searching}
@@ -208,9 +222,12 @@ function GraphScreen() {
                 Todavía no hay películas para mostrar. Añade algunas a favoritos.
               </p>
             )}
-            {!loading && !error && graph && hayPeliculas && (
+            {!loading && !error && graph && visibleGraph && hayPeliculas && summary.movies === 0 && (
+              <p className="graph-placeholder">Ninguna película cumple los filtros seleccionados.</p>
+            )}
+            {!loading && !error && graph && visibleGraph && hayPeliculas && summary.movies > 0 && (
               <>
-                <Graph nodes={graph.nodes} edges={graph.edges} onSelectMovie={handleOpenMovie} />
+                <Graph nodes={visibleGraph.nodes} edges={visibleGraph.edges} onSelectMovie={handleOpenMovie} />
                 {graph.isColdStart && (
                   <p className="graph-notice">
                     Estas son las películas más populares. Añade favoritas para ver recomendaciones.
