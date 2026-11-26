@@ -55,10 +55,10 @@ export class MapRepository {
         if (edges.length === 0) {
             throw new Error("No se proporcionaron aristas para crear");
         }
-        const aristas = await sql<Arista[]>`
+        const aristas = await sql`
             INSERT INTO arista ${sql(edges, "nodo_origen", "nodo_destino")}
             RETURNING *;
-        `;
+        ` as Arista[];
         return aristas;
     }
 
