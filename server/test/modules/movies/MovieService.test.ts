@@ -105,13 +105,15 @@ describe("MovieService", () => {
 
   describe("findPopularMovies()", () => {
     it("debería devolver las películas populares", async () => {
+      const user = await addUser();
       const movie = await addMovie();
+      await sql`INSERT INTO favorita (id_usuario, id_obra) VALUES (${user.id_usuario}, ${movie.id_obra})`;
 
       const result = await movieService.findPopularMovies(100);
 
       expect(result.some((m) => m.id_obra === movie.id_obra)).toBe(true);
     });
-
+    
     it("debería respetar el límite indicado", async () => {
       await addMovie();
       await addMovie();
