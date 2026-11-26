@@ -16,6 +16,7 @@
     "coverage": "bun --bun env-cmd -f .env.test vitest run --coverage --fileParallelism=false"
   },
   "devDependencies": {
+    "@playwright/test": "^1.65.1",
     "@types/bcryptjs": "^2.4.6",
     "@types/bun": "latest",
     "@types/supertest": "^7.2.1",
@@ -37,5 +38,14 @@
     "hono": "^4.13.13",
     "postgres": "^3.4.9",
     "zod": "^4.6.7"
-  }
+  },
+  "version": "1.0.0",
+  "description": "To install dependencies:",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
