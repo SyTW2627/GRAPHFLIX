@@ -1,14 +1,8 @@
 import { useState } from "react";
 import type { MovieResult } from "../../services/movie.service";
+import type { FilterOptions, GraphFilters } from "../../utils/filterGraph";
+import { hasActiveFilters, INITIAL_FILTERS } from "../../utils/filterGraph";
 import "./SideBar.css";
-
-export interface Filters {
-  genre: string;
-  director: string;
-  actores: string;
-  from: string;
-  to: string;
-}
 
 export interface Summary {
   movies: number;
@@ -22,8 +16,9 @@ interface SideBarProps {
   onToggle: () => void;
   search: string;
   onSearchChange: (value: string) => void;
-  filters: Filters;
-  onFiltersChange: (filters: Filters) => void;
+  filters: GraphFilters;
+  onFiltersChange: (filters: GraphFilters) => void;
+  filterOptions: FilterOptions;
   summary: Summary;
   // buscador
   searchActive: boolean;
@@ -36,8 +31,61 @@ interface SideBarProps {
   onOpenMovie: (idObra: number) => void;
 }
 
-// esto es de ejemplo hay que usar los que estan en la base de datos
-const GENRES = ["Todos", "Drama", "Comedia", "Acción", "Terror", "Ciencia ficción"];
+type ListKey = "genres" | "directors" | "actors";
+
+interface CheckListProps {
+  legend: string;
+  options: string[];
+  selected: string[];
+  onChange: (next: string[]) => void;
+  searchable?: boolean;
+}
+
+// lista de casillas con tic (con buscador opcional para listas largas)
+function CheckList({ legend, options, selected, onChange, searchable = false }: CheckListProps) {
+  const [query, setQuery] = useState("");
+
+  const toggle = (value: string) =>
+    onChange(selected.includes(value) ? selected.filter((v) => v !== value) : [...selected, value]);
+
+  const q = query.trim().toLowerCase();
+  const visible = q ? options.filter((o) => o.toLowerCase().includes(q)) : options;
+
+  return (
+    <fieldset className="filter-group">
+      <legend className="sidebar-label">
+        {legend}
+        {selected.length > 0 && <span className="filter-count">{selected.length}</span>}
+      </legend>
+
+      {searchable && (
+        <input
+          type="search"
+          className="sidebar-input filter-search"
+          placeholder={`Buscar ${legend.toLowerCase()}...`}
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          aria-label={`Buscar en ${legend}`}
+        />
+      )}
+
+      <div className="filter-checklist">
+        {options.length === 0 && <p className="search-message">Sin opciones en este mapa.</p>}
+        {options.length > 0 && visible.length === 0 && <p className="search-message">Sin resultados.</p>}
+        {visible.map((opt) => (
+          <label key={opt} className="filter-check">
+            <input
+              type="checkbox"
+              checked={selected.includes(opt)}
+              onChange={() => toggle(opt)}
+            />
+            <span>{opt}</span>
+          </label>
+        ))}
+      </div>
+    </fieldset>
+  );
+}
 
 function SideBar({
   isOpen,
@@ -46,6 +94,7 @@ function SideBar({
   onSearchChange,
   filters,
   onFiltersChange,
+  filterOptions,
   summary,
   searchActive,
   searching,
@@ -59,8 +108,10 @@ function SideBar({
   const [filtersOpen, setFiltersOpen] = useState(true);
 
   // para cambiar filtro
-  const updateFilter = (key: keyof Filters, value: string) =>
+  const updateList = (key: ListKey, value: string[]) =>
     onFiltersChange({ ...filters, [key]: value });
+  const updateYear = (key: "from" | "to", value: string) =>
+     onFiltersChange({ ...filters, [key]: value });
 
   return (
     <aside className={`sidebar ${isOpen ? "" : "sidebar--closed"}`}>
@@ -166,47 +217,26 @@ function SideBar({
 
             {filtersOpen && (
               <div className="sidebar-card-body">
-                <label className="sidebar-label" htmlFor="filter-genre">
-                  Género
-                </label>
-                <select
-                  id="filter-genre"
-                  className="sidebar-input"
-                  value={filters.genre}
-                  onChange={(e) => updateFilter("genre", e.target.value)}
-                >
-                  {GENRES.map((g) => (
-                    <option key={g} value={g}>
-                      {g}
-                    </option>
-                  ))}
-                </select>
-
-                <label className="sidebar-label" htmlFor="filter-director">
-                  Director
-                </label>
-                <select
-                  id="filter-director"
-                  className="sidebar-input"
-                  value={filters.director}
-                  onChange={(e) => updateFilter("director", e.target.value)}
-                >
-                  <option value="">Todos</option>
-                  {/* FALTA cargar directores */}
-                </select>
-
-                <label className="sidebar-label" htmlFor="filter-actores">
-                  Actores
-                </label>
-                <select
-                  id="filter-actores"
-                  className="sidebar-input"
-                  value={filters.actores}
-                  onChange={(e) => updateFilter("actores", e.target.value)}
-                >
-                  <option value="">Todos</option>
-                  {/* FALTA cargar actores */}
-                </select>
+                <CheckList
+                  legend="Género"
+                  options={filterOptions.genres}
+                  selected={filters.genres}
+                  onChange={(v) => updateList("genres", v)}
+                />
+                <CheckList
+                  legend="Director"
+                  options={filterOptions.directors}
+                  selected={filters.directors}
+                  onChange={(v) => updateList("directors", v)}
+                  searchable
+                />
+                <CheckList
+                  legend="Actores"
+                  options={filterOptions.actors}
+                  selected={filters.actors}
+                  onChange={(v) => updateList("actors", v)}
+                  searchable
+                />
 
                 <span className="sidebar-label">Periodo</span>
                 <div className="sidebar-range">
@@ -216,7 +246,7 @@ function SideBar({
                     placeholder="desde"
                     aria-label="Año desde"
                     value={filters.from}
-                    onChange={(e) => updateFilter("from", e.target.value)}
+                    onChange={(e) => updateYear("from", e.target.value)}
                   />
                   <input
                     type="number"
@@ -224,9 +254,18 @@ function SideBar({
                     placeholder="hasta"
                     aria-label="Año hasta"
                     value={filters.to}
-                    onChange={(e) => updateFilter("to", e.target.value)}
+                    onChange={(e) => updateYear("to", e.target.value)}
                   />
                 </div>
+                {hasActiveFilters(filters) && (
+                  <button
+                    type="button"
+                    className="filter-clear"
+                    onClick={() => onFiltersChange(INITIAL_FILTERS)}
+                  >
+                    Limpiar filtros
+                  </button>
+                )}
               </div>
             )}
           </section>
