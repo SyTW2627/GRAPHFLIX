@@ -8,7 +8,7 @@ import { getStoreUSer } from "../../services/auth.service";
 import { getMapGraph, getUserMaps, SessionExpiredError, type GraphResponse } from "../../services/graph.service";
 import { addFavorite, getFavorites, removeFavorite, type Favorite } from "../../services/favorite.service";
 import { searchMovies, type MovieResult } from "../../services/movie.service";
-import { filterGraph, loadFilters, saveFilters, getFilterOptions, INITIAL_FILTERS, type GraphFilters } from "../../utils/filterGraph";
+import { filterGraph, loadFilters, saveFilters, getFilterOptions, type GraphFilters } from "../../utils/filterGraph";
 import "./graph-screen.css";
 
 const EMPTY_GRAPH: GraphResponse = { isColdStart: true, nodes: [], edges: [] };
