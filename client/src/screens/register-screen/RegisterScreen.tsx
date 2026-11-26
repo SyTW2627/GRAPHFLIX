@@ -9,6 +9,8 @@ import Footer from "../../components/Footer/Footer";
 import { register, login } from "../../services/auth.service";
 import { useNavigate } from "react-router-dom";
 
+const MIN_PASSWORD_LENGTH = 8;
+
 function RegisterScreen() {
   const [mostrarPassword, setMostrarPassword] = useState(false);
   const [mostrarConfirmarPassword, setMostrarConfirmarPassword] = useState(false);
@@ -26,6 +28,12 @@ function RegisterScreen() {
   async function handleRegister(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
+
+    // Comprobar longitud mínima de la contraseña.
+    if (password.length < MIN_PASSWORD_LENGTH) {
+      setError(`La contraseña debe tener al menos ${MIN_PASSWORD_LENGTH} caracteres.`);
+      return;
+    }
 
     // Comprobar que las contraseñas coincidan.
     if (password !== confirmarPassword) {
@@ -144,7 +152,11 @@ function RegisterScreen() {
           </div>
 
           {/* Mensaje de error */}
-          {error && <p className="error-message">{error}</p>}
+          {error && (
+            <p className="error-message" role="alert">
+              {error}
+            </p>
+          )}
 
           <button type="submit" className="register-button">
             Registrarse
