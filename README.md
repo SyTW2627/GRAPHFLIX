@@ -56,6 +56,8 @@ bun run db:jaccard
 ```
 
 ## Entorno de pruebas
+
+### Test unitarios
 Para ejecutar los tests, primero crear la base de datos de pruebas:
 ```bash
 docker exec -it graphflix_postgres psql -U usuario -d graphflix -c "CREATE DATABASE graphflix_test;"
@@ -71,6 +73,22 @@ Si quieres ejecutar los tests de alguna carpeta en concreto, puedes usar:
 ```bash
 bun run test <carpeta>
 ```
+### Test E2E
+Para ejecutar los tests E2E, primero iniciar el servidor y el cliente, y luego ejecutar los tests:
+```bash
+# Iniciar servidor
+cd server
+bun run dev
+# Iniciar el cliente
+cd ../client
+bun run dev
+# Ejecutar tests E2E
+cd ..
+bunx playwright test
+```
+
+Para ver el coverage, ir al fichero `coverage-e2e/index.html` y abrirlo en el navegador.
+
 
 ## Ejecución de la aplicación
 Para ejecutar la aplicación, primero iniciar el servidor y luego el cliente:
